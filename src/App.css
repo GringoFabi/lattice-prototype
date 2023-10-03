@@ -26,6 +26,7 @@
   text-align: center;
   font-size: 1.5em;
   filter: drop-shadow(2px 4px 6px #444);
+  position: absolute;
 }
 
 .upload {
@@ -61,9 +62,11 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  background-image: url("assets/graph.svg");
-  background-repeat: no-repeat;
-  background-size: contain;
-  background-position: center;
+  padding: 1em;
+}
+
+.back-ground {
+  width: inherit;
+  height: inherit;
 }
 

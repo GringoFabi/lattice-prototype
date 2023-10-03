@@ -1,16 +1,20 @@
 import './App.css'
+import graph from './assets/graph.svg'
 
 function App() {
     return (
-        <div class="drop-zone"
-             onDrop={(event) => dropHandler(event)}
-             onDragOver={(event) => dragOver(event)}
-        >
-            <p class="upload-prompt">Drag and drop a json file or click&nbsp
-                <span className="upload" onClick={(event) => startUpload(event)}>here</span>
-                , to start the
-                upload.</p>
-        </div>
+        <>
+            <div className="drop-zone"
+                 onDrop={(event) => dropHandler(event)}
+                 onDragOver={(event) => dragOver(event)}
+            >
+                <p className="upload-prompt">Drag and drop a json file or click&nbsp
+                    <span className="upload" onClick={(event) => startUpload(event)}>here</span>
+                    , to start the
+                    upload.</p>
+                <img src={graph} className="back-ground" alt="background"/>
+            </div>
+        </>
     )
 }
 

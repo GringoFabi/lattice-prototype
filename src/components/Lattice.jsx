@@ -1,43 +1,24 @@
+import {SVG} from "@svgdotjs/svg.js";
+import "@svgdotjs/svg.panzoom.js"
+import {createEffect, createMemo, onMount} from "solid-js";
+import {draw_lattice} from "../lattice-library/main.js";
+import "./Lattice.css"
 
 function Lattice({file}) {
-    const {nodes, positions, edges, toplabels, botlabels, valuations, xmax, ymax} = readJSON(file);
+    const svgContainer = createMemo(() => SVG(), []);
+    // svgContainer().add(SVG().rect(100, 100).fill("#123456"))
 
-    console.log(nodes, positions, edges, toplabels, botlabels, valuations, xmax, ymax)
-}
+    let svgWrapper;
 
-function readJSON(json){
-    let nodes = []
-    let positions = []
-    let edges = []
-    let toplabels = []
-    let botlabels = []
-    let valuations = []
+    onMount(() => draw_lattice(file, svgContainer(), svgWrapper))
 
-    //Coordinates of Outmost Nodes on either Axis
-    let xmax = 0
-    let ymax = 0
+    createEffect(() => svgContainer().addTo(svgWrapper))
 
-    //Read Nodes, Positions and Labels
-    for (let i = 0; i < json.nodes.length; i++){
+    return (
+        <div class="box" ref={ref => svgWrapper = ref}>
 
-        nodes[i] = i
-        positions[i] = json.positions[i][i]
-        toplabels[i] = Object.entries(json['shorthand-annotation'][i])[0][1][0]
-        botlabels[i] = Object.entries(json['shorthand-annotation'][i])[0][1][1]
-        valuations[i] = json.valuations[i][i]
-
-        if (json.positions[i][i][0] > xmax){xmax = json.positions[i][i][0]}
-        if (json.positions[i][i][1] > ymax){ymax = json.positions[i][i][1]}
-    }
-    //Read Edges
-    for (let k = 0; k < json.edges.length; k++){
-        for (let l = 0; l < Object.entries(json.edges[k])[0][1].length; l++){
-            edges.push([Object.entries(json.edges[k])[0][0],
-                Object.entries(json.edges[k])[0][1][l]])
-        }
-    }
-
-    return {nodes, positions, edges, toplabels, botlabels, valuations, xmax, ymax}
+        </div>
+    )
 }
 
 export default Lattice;

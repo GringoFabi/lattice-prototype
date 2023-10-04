@@ -45,6 +45,9 @@
   border: 1px solid #888;
   margin: 1em 1em 0 1em;
   padding: 1em;
+  display: flex;
+  flex-direction: row-reverse;
+  align-items: flex-start;
 }
 
 .drop-zone {

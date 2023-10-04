@@ -22,6 +22,22 @@ body {
   -moz-osx-font-smoothing: grayscale;
   -webkit-text-size-adjust: 100%;
 
+  --extent-color: #ddbb00;
+  --extent-faint: #ddbbaa;
+  --intent-color: #4444bb;
+  --intent-faint: #8888ff;
+  --clear: #ffffff;
+  --highlight-color: #55dd55;
+  --default-black: #000000;
+  --greyed-out: #aaaaaa;
+
+  --label-lower-indicator: label_lower_indicator;
+  --label-upper-indicator: label_upper_indicator;
+
+  --attribute: attribute;
+  --object: object;
+
+
   display: flex;
   align-content: center;
   width: 100%;
@@ -29,7 +45,7 @@ body {
 }
 
 .root {
-  min-height: 50vh;
+  min-height: 99vh;
   width: 100%;
   display: flex;
   flex-direction: row;

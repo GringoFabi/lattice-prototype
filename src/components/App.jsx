@@ -8,16 +8,15 @@ function App() {
     const [file, setFile] = createSignal(null)
 
     return (
-        <div className="root">
+        <>
             <div className="main">
-                <Show when={file()}
-                      fallback={() => <Dropzone update={setFile}/>}
-                >
+                <Show when={file()} fallback={() => <Dropzone update={setFile}/>}>
+                    <button onClick={() => setFile(null)}>Reset</button>
                     <Lattice file={file()}/>
                 </Show>
             </div>
             <Footer/>
-        </div>
+        </>
     )
 }
 

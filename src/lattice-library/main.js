@@ -1,4 +1,20 @@
-var style = getComputedStyle(document.body)
+import {SVG} from "@svgdotjs/svg.js";
+import {subset} from "./utility.js";
+
+
+const style = getComputedStyle(document.body);
+
+//Data Objects
+let nodes = []
+let positions = []
+let edges = []
+
+let toplabels = []
+let botlabels = []
+// valuations = lattice[5]
+
+let xmax = 0
+let ymax = 0
 
 //SVG Objects
 let edge_objects = []
@@ -11,47 +27,167 @@ let valuations = []
 let width = 800
 let height = 900
 
-let draw = SVG().addTo('.box').size(width, height).viewbox(`0 0 ${width} ${height}`)
-.panZoom({
-    panning: true,
-    wheelZoom: true,
-    zoomMin: 0.5,
-    zoomMax: 2,
-    zoomFactor: 0.1,
-    panButton: 1
-  })
+//Listener for Deselection
+let draw = SVG()
 
 //Variables for Node Selection
+
 let selection = new Set()
 let selection_type = ""
 let selected_edges = new Set()
 //Dragging Boundaries
 let bounds = {}
+let box;
 
-//Listener for Deselection
-let box = document.querySelector(".box");
-box.addEventListener("click", function(event) {
-    //Checks if Click Landed on SVG Draw Object or on Background Box
-    if (Object.is(document.elementFromPoint(event.clientX, event.clientY), draw['node']) || Object.is(document.elementFromPoint(event.clientX, event.clientY), box)){
-        reset_selection()
+function init(container, wrapper) {
+    box = container
+    wrapper.addEventListener("click", function (event) {
+        //Checks if Click Landed on SVG Draw Object or on Background Box
+        let elementFromPoint = document.elementFromPoint(event.clientX, event.clientY);
+        let a = Object.is(elementFromPoint, draw['node']);
+        let b = Object.is(elementFromPoint, container);
+        if (a || b || elementFromPoint.localName === "svg") {
+            reset_selection()
+        }
+    });
+
+    let parent = wrapper.parentElement;
+    draw.addTo(container).size(parent.clientWidth, parent.clientHeight).viewbox(`0 0 ${(parent.clientWidth)} ${(parent.clientHeight)}`)
+        .panZoom({
+            panning: true,
+            wheelZoom: true,
+            zoomMin: 0.5,
+            zoomMax: 2,
+            zoomFactor: 0.1,
+            panButton: 1
+        })
+}
+
+export function draw_lattice(file, container, wrapper) {
+    init(container, wrapper)
+    const lattice = readJSON(file)
+
+    delete_all()
+
+    let nodes = lattice[0]
+    let positions = lattice[1]
+    let edges = lattice[2]
+
+    let toplabels = lattice[3]
+    let botlabels = lattice[4]
+    valuations = lattice[5]
+
+    let xmax = lattice[6]
+    let ymax = lattice[7]
+
+    //Draw Edges
+    let buffer = 50
+
+    for (let i = 0; i < edges.length; i++) {
+        let source = edges[i][0]
+        let target = edges[i][1]
+
+        edge_objects[i] = draw.line(positions[source][0] * (width / (2.2 * xmax)) + width / 2, -(positions[source][1] * (height / (1.2 * ymax))) + height - buffer,
+            positions[target][0] * (width / (2.2 * xmax)) + width / 2, -(positions[target][1] * (height / (1.2 * ymax))) + height - buffer)
+            .stroke({width: 5, color: style.getPropertyValue('--default-black')})
+            .attr('source', source)
+            .attr('target', target)
+
     }
-});
+    //Draw Nodes and Labels
+    for (let j = 0; j < nodes.length; j++) {
 
-function readJSON(json){
+        labels_upper[j] = draw.text(String(toplabels[j]))
+            .attr('name', (style.getPropertyValue('--label-upper-indicator') + String(j)))
+            .move(positions[j][0] * (width / (2.2 * xmax)) + width / 2 + 20,
+                -(positions[j][1] * (height / (1.2 * ymax))) - 60 - buffer + height)
+            .font({fill: style.getPropertyValue('--intent-color'), size: 30, family: 'Arial'})
+            .click(function () {
+                handle_downwards(this)
+            })
 
-    let nodes = []
-    let positions = []
-    let edges = []
-    let toplabels = []
-    let botlabels = []
-    let valuations = []
+        labels_lower[j] = draw.text(String(botlabels[j]))
+            .attr('name', (style.getPropertyValue('--label-lower-indicator') + String(j)))
+            .move(positions[j][0] * (width / (2.2 * xmax)) + width / 2 + 20,
+                -(positions[j][1] * (height / (1.2 * ymax))) + 10 - buffer + height)
+            .font({fill: style.getPropertyValue('--extent-color'), size: 30, family: 'Arial'})
+            .click(function () {
+                handle_upwards(this)
+            })
 
-    //Coordinates of Outmost Nodes on either Axis
-    let xmax = 0
-    let ymax = 0
+        valuations[j] = draw.text(String(valuations[j]))
+            .move(positions[j][0] * (width / (2.2 * xmax)) + width / 2 + 30,
+                -(positions[j][1] * (height / (1.2 * ymax))) - 20 - buffer + height)
+            .font({fill: style.getPropertyValue('--default-black'), size: 30, family: 'Arial'})
+
+        nodes_upper[j] = draw.path("M 0 0 L 25 0 A 1 1 0 0 0 -25 0 Z")
+            .attr('name', j)
+            .attr('drag', 0)
+            .move(positions[j][0] * (width / (2.2 * xmax)) + width / 2 - 25
+                , -(positions[j][1] * (height / (1.2 * ymax))) - 25 - buffer + height)
+            .stroke({color: style.getPropertyValue('--default-black'), width: 4, linecap: 'round', linejoin: 'round'})
+            .click(function () {
+                handle_downwards(this)
+            })
+            .mousedown(function (e) {
+                startDrag(e, this)
+            })
+            .mousemove(function (e) {
+                Drag(e, this)
+            })
+            .mouseup(function (e) {
+                endDrag(e, this)
+            })
+
+        if (labels_upper[j].text() === "") {
+            nodes_upper[j].fill(style.getPropertyValue('--clear'))
+        } else {
+            nodes_upper[j].fill(style.getPropertyValue('--intent-faint'))
+        }
+
+
+        nodes_lower[j] = draw.path("M 0 0 L -25 0 A 1 1 0 0 0 25 0 Z")
+            .attr('name', j)
+            .attr('drag', 0)
+            .move(positions[j][0] * (width / (2.2 * xmax)) + width / 2 - 25
+                , -(positions[j][1] * (height / (1.2 * ymax))) - buffer + height)
+            .stroke({color: style.getPropertyValue('--default-black'), width: 4, linecap: 'round', linejoin: 'round'})
+            .click(function () {
+                handle_upwards(this)
+            })
+            .mousedown(function (e) {
+                startDrag(e, this)
+            })
+            .mousemove(function (e) {
+                Drag(e, this)
+            })
+            .mouseup(function (e) {
+                endDrag(e, this)
+            })
+
+        if (labels_lower[j].text() === "") {
+            nodes_lower[j].fill(style.getPropertyValue('--clear'))
+        } else {
+            nodes_lower[j].fill(style.getPropertyValue('--extent-faint'))
+        }
+
+    }
+}
+
+function readJSON(json) {
+    // let nodes = []
+    // let positions = []
+    // let edges = []
+    // let toplabels = []
+    // let botlabels = []
+    // let valuations = []
+    //
+    // //Coordinates of Outmost Nodes on either Axis
+    // let xmax = 0
+    // let ymax = 0
 
     //Read Nodes, Positions and Labels
-    for (let i = 0; i < json.nodes.length; i++){
+    for (let i = 0; i < json.nodes.length; i++) {
 
         nodes[i] = i
         positions[i] = json.positions[i][i]
@@ -59,132 +195,32 @@ function readJSON(json){
         botlabels[i] = Object.entries(json['shorthand-annotation'][i])[0][1][1]
         valuations[i] = json.valuations[i][i]
 
-        if (json.positions[i][i][0] > xmax){xmax = json.positions[i][i][0]}
-        if (json.positions[i][i][1] > ymax){ymax = json.positions[i][i][1]}
+        if (json.positions[i][i][0] > xmax) {
+            xmax = json.positions[i][i][0]
+        }
+        if (json.positions[i][i][1] > ymax) {
+            ymax = json.positions[i][i][1]
+        }
     }
     //Read Edges
-    for (let k = 0; k < json.edges.length; k++){
+    for (let k = 0; k < json.edges.length; k++) {
 
 
-        for (let l = 0; l < Object.entries(json.edges[k])[0][1].length; l++){
+        for (let l = 0; l < Object.entries(json.edges[k])[0][1].length; l++) {
 
             edges.push([Object.entries(json.edges[k])[0][0],
-            Object.entries(json.edges[k])[0][1][l]])
+                Object.entries(json.edges[k])[0][1][l]])
         }
     }
 
     return [nodes, positions, edges, toplabels, botlabels, valuations, xmax, ymax]
 }
-function load_file(){
-    let input = document.createElement('input');
-    input.type = 'file';
-    
-    input.onchange = e => { 
 
-            let file = e.target.files[0]; 
-            let reader = new FileReader();
-            reader.readAsText(file,'UTF-8')
-            reader.onload = readerEvent => {
-                try{
-                    let content = readerEvent.target.result
-                    draw_lattice(readJSON(JSON.parse(content)))
-                }
-                catch (e) {
-                    alert("Failure loading Context File:\n"+e)
-                }
-            }
-        
-    }  
-        
-    input.click();
-}
-function draw_lattice(lattice){
-
-    delete_all()
-
-    nodes = lattice[0]
-    positions = lattice[1]
-    edges = lattice[2]
-
-    toplabels = lattice[3]
-    botlabels = lattice[4]
-    valuations = lattice[5]
-
-    xmax = lattice[6]
-    ymax = lattice[7]
-
-    //Draw Edges
-    for (let i = 0; i < edges.length; i++){
-
-        source = edges[i][0]
-        target = edges[i][1]
-        buffer = 50
-
-        edge_objects[i] = draw.line(positions[source][0]*(width/(2.2*xmax)) + width/2, -(positions[source][1]*(height/(1.2*ymax))) + height - buffer, 
-                                    positions[target][0]*(width/(2.2*xmax)) + width/2, -(positions[target][1]*(height/(1.2*ymax))) + height - buffer)
-                                    .stroke({ width: 5 , color: style.getPropertyValue('--default-black')})
-                                    .attr('source', source)
-                                    .attr('target', target)
-
-    }
-    //Draw Nodes and Labels
-    for (let j = 0; j < nodes.length; j++){
-
-        labels_upper[j] = draw.text(String(toplabels[j]))
-            .attr('name', (style.getPropertyValue('--label-upper-indicator')+String(j)))
-            .move(positions[j][0]*(width/(2.2*xmax)) + width/2 +20, 
-            -(positions[j][1]*(height/(1.2*ymax))) - 60 - buffer + height)
-            .font({ fill: style.getPropertyValue('--intent-color'), size: 30, family: 'Arial' })
-            .click(function() {handle_downwards(this)})
-
-        labels_lower[j] = draw.text(String(botlabels[j]))
-        .attr('name', (style.getPropertyValue('--label-lower-indicator')+String(j)))
-            .move(positions[j][0]*(width/(2.2*xmax)) + width/2 +20, 
-            -(positions[j][1]*(height/(1.2*ymax))) + 10 - buffer + height)
-            .font({ fill: style.getPropertyValue('--extent-color'), size: 30, family: 'Arial'})
-            .click(function() {handle_upwards(this)})
-
-        valuations[j] = draw.text(String(valuations[j]))
-            .move(positions[j][0]*(width/(2.2*xmax)) + width/2 +30, 
-            -(positions[j][1]*(height/(1.2*ymax))) - 20 - buffer + height)
-            .font({ fill: style.getPropertyValue('--default-black'), size: 30, family: 'Arial' })
-
-        nodes_upper[j] = draw.path("M 0 0 L 25 0 A 1 1 0 0 0 -25 0 Z")
-                        .attr('name', j)
-                        .attr('drag', 0)
-                        .move(positions[j][0]*(width/(2.2*xmax)) + width/2 -25
-                            , -(positions[j][1]*(height/(1.2*ymax))) - 25 - buffer + height)
-                        .stroke({ color: style.getPropertyValue('--default-black'), width: 4, linecap: 'round', linejoin: 'round' })
-                        .click(function() {handle_downwards(this)})
-                        .mousedown(function(e) {startDrag(e, this)})
-                        .mousemove(function(e) {Drag(e, this)})
-                        .mouseup(function(e) {endDrag(e, this)})
-        
-                        if (labels_upper[j].text() == ""){nodes_upper[j].fill(style.getPropertyValue('--clear'))}
-                        else{nodes_upper[j].fill(style.getPropertyValue('--intent-faint'))}
-                            
-
-        nodes_lower[j] = draw.path("M 0 0 L -25 0 A 1 1 0 0 0 25 0 Z")
-                        .attr('name', j)
-                        .attr('drag', 0)
-                        .move(positions[j][0]*(width/(2.2*xmax)) + width/2 -25
-                            , -(positions[j][1]*(height/(1.2*ymax))) -buffer + height)
-                        .stroke({ color: style.getPropertyValue('--default-black'), width: 4, linecap: 'round', linejoin: 'round' })
-                        .click(function() {handle_upwards(this)})
-                        .mousedown(function(e) {startDrag(e, this)})
-                        .mousemove(function(e) {Drag(e, this)})
-                        .mouseup(function(e) {endDrag(e, this)})
-
-                        if (labels_lower[j].text() == ""){nodes_lower[j].fill(style.getPropertyValue('--clear'))}
-                        else{nodes_lower[j].fill(style.getPropertyValue('--extent-faint'))}
-
-    }
-}
-function startDrag(e, node){
+function startDrag(e, node) {
 
     //Only Add Node to Selection, if other Half is not Already Present
     let name = node.attr('name')
-    if (!(selection.has(nodes_upper[name]) || selection.has(nodes_lower[name]))){
+    if (!(selection.has(nodes_upper[name]) || selection.has(nodes_lower[name]))) {
         selection.add(node)
     }
     highlight_selection(selection)
@@ -195,17 +231,17 @@ function startDrag(e, node){
 
         let maxY = Infinity
         let minY = 0
-        for (let i = 0; i < edge_objects.length; i++){
+        for (let i = 0; i < edge_objects.length; i++) {
 
-            if (edge_objects[i].attr('source') == name){
+            if (edge_objects[i].attr('source') === name) {
                 selected_edges.add(edge_objects[i])
-                if (nodes_upper[edge_objects[i].attr('target')]['_array'][0][2] > minY){
+                if (nodes_upper[edge_objects[i].attr('target')]['_array'][0][2] > minY) {
                     minY = nodes_upper[edge_objects[i].attr('target')]['_array'][0][2]
                 }
             }
-            if (edge_objects[i].attr('target') == name){
+            if (edge_objects[i].attr('target') === name) {
                 selected_edges.add(edge_objects[i])
-                if (nodes_upper[edge_objects[i].attr('source')]['_array'][0][2] < maxY){
+                if (nodes_upper[edge_objects[i].attr('source')]['_array'][0][2] < maxY) {
                     maxY = nodes_upper[edge_objects[i].attr('source')]['_array'][0][2]
                 }
             }
@@ -214,9 +250,9 @@ function startDrag(e, node){
     })
 
     //Reset Drag Flag for all other Nodes
-    for (let j = 0; j < nodes_upper.length; j++){
+    for (let j = 0; j < nodes_upper.length; j++) {
 
-        if (nodes_upper[j].attr('source') != name){
+        if (nodes_upper[j].attr('source') !== name) {
             nodes_upper[j].attr('drag', 0)
             nodes_lower[j].attr('drag', 0)
         }
@@ -227,24 +263,26 @@ function startDrag(e, node){
     nodes_lower[node.attr('name')].attr('drag', 1)
 
 }
-function Drag(e, node){
 
-    if (node.attr('drag') == 1){
+function Drag(e, node) {
 
-        p = draw.point(e.clientX, e.clientY)
-        cursorX = p.x
-        cursorY = p.y
+    if (node.attr('drag') === 1) {
+
+        let p = draw.point(e.clientX, e.clientY)
+        let cursorX = p.x
+        let cursorY = p.y
 
         selection.forEach(element => {
 
-            if (!(element.attr('name') == node.attr('name'))){
+            if (!(element.attr('name') === node.attr('name'))) {
                 redrawNode(element, node, cursorX, cursorY, bounds, selected_edges)
             }
         })
         redrawNode(node, node, cursorX, cursorY, bounds, selected_edges)
     }
 }
-function endDrag(e, node){
+
+function endDrag(e, node) {
     let name = node.attr('name')
     //Reset Drag Flag
     nodes_upper[name].attr('drag', 0)
@@ -252,7 +290,8 @@ function endDrag(e, node){
     selected_edges.clear()
     bounds = {}
 }
-function redrawNode(current_node, dragged_node, cursorX, cursorY, bounds, selected_edges){
+
+function redrawNode(current_node, dragged_node, cursorX, cursorY, bounds, selected_edges) {
 
 
     let name = current_node.attr('name')
@@ -270,10 +309,14 @@ function redrawNode(current_node, dragged_node, cursorX, cursorY, bounds, select
     let posY = cursorY + node_offsetY + distY
 
     //Account for Boundaries
-    if (posY < bounds[name][0]){posY = bounds[name][0]}
-    if (posY > bounds[name][1]){posY = bounds[name][1]} 
+    if (posY < bounds[name][0]) {
+        posY = bounds[name][0]
+    }
+    if (posY > bounds[name][1]) {
+        posY = bounds[name][1]
+    }
 
-    nodes_upper[name].move(posX, posY -25)
+    nodes_upper[name].move(posX, posY - 25)
     nodes_lower[name].move(posX, posY)
 
     labels_upper[name].move(posX + 43, posY - 50)
@@ -283,19 +326,20 @@ function redrawNode(current_node, dragged_node, cursorX, cursorY, bounds, select
     //Readraw Affected Edges
     selected_edges.forEach(element => {
 
-        if (element.attr('source') == name){
+        if (element.attr('source') === name) {
             element.attr('x1', posX + 25)
             element.attr('y1', posY)
         }
-        if (element.attr('target') == name){
+        if (element.attr('target') === name) {
             element.attr('x2', posX + 25)
             element.attr('y2', posY)
         }
     })
 }
-function handle_upwards(node){
+
+function handle_upwards(node) {
     reset_marking()
-    if (selection_type == style.getPropertyValue('--attribute')){
+    if (selection_type === style.getPropertyValue('--attribute')) {
         reset_selection()
     }
     selection_type = style.getPropertyValue('--object')
@@ -303,53 +347,61 @@ function handle_upwards(node){
 
     //Retrieve Corresponding Nodes if Label was Selected
     let name = String(node.attr('name'))
-    if (name.includes(style.getPropertyValue('--label-lower-indicator'))){
+    if (name.includes(style.getPropertyValue('--label-lower-indicator'))) {
         node = nodes_lower[name.replace(style.getPropertyValue('--label-lower-indicator'), '')]
     }
-    if (name.includes(style.getPropertyValue('--label-upper-indicator'))){
+    if (name.includes(style.getPropertyValue('--label-upper-indicator'))) {
         node = nodes_upper[name.replace(style.getPropertyValue('--label-upper-indicator'), '')]
     }
 
     //Check if Other Half is Alredy Present
-    if (!selection.has(nodes_upper[name])){
+    if (!selection.has(nodes_upper[name])) {
         selection.add(node)
     }
     grey_out()
-    if (selection.size > 1){find_sup(node)}
-    else{mark_upper(node)}
+    if (selection.size > 1) {
+        find_sup(node)
+    } else {
+        mark_upper(node)
+    }
     highlight_selection(selection)
 }
-function handle_downwards(node){
+
+function handle_downwards(node) {
     reset_marking()
-    if (selection_type == style.getPropertyValue('--object')){
+    if (selection_type === style.getPropertyValue('--object')) {
         reset_selection()
     }
     selection_type = style.getPropertyValue('--attribute')
     //Only Add Node to Selection, if other Half is not Already Present
 
-    
+
     //Retrieve Corresponding Nodes if Label was Selected
     let name = String(node.attr('name'))
-    if (name.includes(style.getPropertyValue('--label-lower-indicator'))){
+    if (name.includes(style.getPropertyValue('--label-lower-indicator'))) {
         node = nodes_lower[name.replace(style.getPropertyValue('--label-lower-indicator'), '')]
     }
-    if (name.includes(style.getPropertyValue('--label-upper-indicator'))){
+    if (name.includes(style.getPropertyValue('--label-upper-indicator'))) {
         node = nodes_upper[name.replace(style.getPropertyValue('--label-upper-indicator'), '')]
     }
 
     //Check if Other Half is Alredy Present
-    if (!selection.has(nodes_lower[name])){
+    if (!selection.has(nodes_lower[name])) {
         selection.add(node)
     }
     grey_out()
-    if (selection.size > 1){find_inf(node)}
-    else{mark_lower(node)}
+    if (selection.size > 1) {
+        find_inf(node)
+    } else {
+        mark_lower(node)
+    }
     highlight_selection(selection)
 }
-function mark_upper(node){
+
+function mark_upper(node) {
 
     let name = node.attr("name")
-    if(nodes_upper[name].attr('fill') == style.getPropertyValue('--greyed-out')){
+    if (nodes_upper[name].attr('fill') === style.getPropertyValue('--greyed-out')) {
         nodes_upper[name].fill(style.getPropertyValue('--intent-color'))
     }
     labels_upper[name].font({weight: 'bold', fill: style.getPropertyValue('--intent-color')})
@@ -361,11 +413,11 @@ function mark_upper(node){
     let super_concepts = new Set()
     super_concepts.add(String(name))
     let changed = true
-    while (changed == true){
+    while (changed === true) {
         changed = false
-        for (let i = 0; i < edges.length; i++){
+        for (let i = 0; i < edges.length; i++) {
 
-            if (super_concepts.has(String(edges[i][0])) & edge_objects[i].stroke() == style.getPropertyValue('--greyed-out')){
+            if (super_concepts.has(String(edges[i][0])) && edge_objects[i].stroke() === style.getPropertyValue('--greyed-out')) {
 
                 edge_objects[i].stroke({color: style.getPropertyValue('--intent-color'), width: 8})
                 changed = true
@@ -374,17 +426,18 @@ function mark_upper(node){
                 nodes_upper[edges[i][1]].stroke({color: style.getPropertyValue('--default-black')})
                 labels_upper[edges[i][1]].font({weight: 'bold', fill: style.getPropertyValue('--intent-color')})
 
-                if(nodes_upper[edges[i][1]].attr('fill') == style.getPropertyValue('--greyed-out')){
+                if (nodes_upper[edges[i][1]].attr('fill') === style.getPropertyValue('--greyed-out')) {
                     nodes_upper[edges[i][1]].fill(style.getPropertyValue('--intent-color'))
                 }
             }
         }
     }
 }
-function mark_lower(node){
+
+function mark_lower(node) {
 
     let name = node.attr("name")
-    if(nodes_lower[name].attr('fill') == style.getPropertyValue('--greyed-out')){
+    if (nodes_lower[name].attr('fill') === style.getPropertyValue('--greyed-out')) {
         nodes_lower[name].fill(style.getPropertyValue('--extent-color'))
     }
     labels_lower[name].font({weight: 'bold', fill: style.getPropertyValue('--extent-color')})
@@ -396,11 +449,11 @@ function mark_lower(node){
     let sub_concepts = new Set()
     sub_concepts.add(String(name))
     let changed = true
-    while (changed == true){
+    while (changed === true) {
         changed = false
-        for (let i = 0; i < edges.length; i++){
+        for (let i = 0; i < edges.length; i++) {
 
-            if (sub_concepts.has(String(edges[i][1])) & edge_objects[i].stroke() == style.getPropertyValue('--greyed-out')){
+            if (sub_concepts.has(String(edges[i][1])) && edge_objects[i].stroke() === style.getPropertyValue('--greyed-out')) {
 
                 edge_objects[i].stroke({color: style.getPropertyValue('--extent-color'), width: 8})
                 changed = true
@@ -409,14 +462,15 @@ function mark_lower(node){
                 nodes_upper[edges[i][0]].stroke({color: style.getPropertyValue('--default-black')})
                 labels_lower[edges[i][1]].font({weight: 'bold', fill: style.getPropertyValue('--extent-color')})
 
-                if(nodes_lower[edges[i][1]].attr('fill') == style.getPropertyValue('--greyed-out')){
+                if (nodes_lower[edges[i][1]].attr('fill') === style.getPropertyValue('--greyed-out')) {
                     nodes_lower[edges[i][1]].fill(style.getPropertyValue('--extent-color'))
                 }
             }
         }
     }
 }
-function find_sup(node){
+
+function find_sup(node) {
 
     let super_concepts = new Set()
     super_concepts.add(node)
@@ -424,33 +478,33 @@ function find_sup(node){
 
     //Find all Greater Reachable Nodes
     let changed = true
-    while (changed == true){
+    while (changed === true) {
         changed = false
-        for (let i = 0; i < edges.length; i++){
+        for (let i = 0; i < edges.length; i++) {
 
-            if (super_concepts.has(nodes_lower[edges[i][0]])){
+            if (super_concepts.has(nodes_lower[edges[i][0]])) {
 
-                if (!super_concepts.has(nodes_lower[edges[i][1]])){
+                if (!super_concepts.has(nodes_lower[edges[i][1]])) {
                     super_concepts.add(nodes_lower[edges[i][1]])
                     changed = true
                 }
             }
         }
     }
-        
+
     //Search in Opposite Direction
     super_concepts.forEach(element => {
         let reachable = new Set()
         reachable.add(element)
 
         let changed2 = true
-        while (changed2 == true){
+        while (changed2 === true) {
             changed2 = false
-            for (var j = 0; j < edges.length; j++){
-    
-                if (reachable.has(nodes_lower[edges[j][1]])){
+            for (let j = 0; j < edges.length; j++) {
 
-                    if (!reachable.has(nodes_lower[edges[j][0]])){
+                if (reachable.has(nodes_lower[edges[j][1]])) {
+
+                    if (!reachable.has(nodes_lower[edges[j][0]])) {
                         reachable.add(nodes_upper[edges[j][0]])
                         reachable.add(nodes_lower[edges[j][0]])
                         changed2 = true
@@ -459,16 +513,17 @@ function find_sup(node){
             }
         }
         //If all Selected Nodes are Contained within the Reachable Nodes, the Starting Node is a Potential Supremum
-        if (subset(reachable, selection)){
+        if (subset(reachable, selection)) {
             //Update Supremum, if a Smaller Candidate has been Found
-            if (supremum == undefined || element.attr("name") < supremum.attr("name")){
+            if (supremum === undefined || element.attr("name") < supremum.attr("name")) {
                 supremum = element
             }
         }
     })
     mark_upper(supremum)
 }
-function find_inf(node){
+
+function find_inf(node) {
 
     let sub_concepts = new Set()
     sub_concepts.add(node)
@@ -476,33 +531,33 @@ function find_inf(node){
 
     //Find all Smaller Reachable Nodes
     let changed = true
-    while (changed == true){
+    while (changed === true) {
         changed = false
-        for (let i = 0; i < edges.length; i++){
+        for (let i = 0; i < edges.length; i++) {
 
-            if (sub_concepts.has(nodes_upper[edges[i][1]])){
+            if (sub_concepts.has(nodes_upper[edges[i][1]])) {
 
-                if (!sub_concepts.has(nodes_upper[edges[i][0]])){
+                if (!sub_concepts.has(nodes_upper[edges[i][0]])) {
                     sub_concepts.add(nodes_upper[edges[i][0]])
                     changed = true
                 }
             }
         }
     }
-        
+
     //Search in Opposite Direction
     sub_concepts.forEach(element => {
         let reachable = new Set()
         reachable.add(element)
 
         let changed2 = true
-        while (changed2 == true){
+        while (changed2 === true) {
             changed2 = false
-            for (var j = 0; j < edges.length; j++){
-    
-                if (reachable.has(nodes_upper[edges[j][0]])){
+            for (let j = 0; j < edges.length; j++) {
 
-                    if (!reachable.has(nodes_upper[edges[j][1]])){
+                if (reachable.has(nodes_upper[edges[j][0]])) {
+
+                    if (!reachable.has(nodes_upper[edges[j][1]])) {
                         reachable.add(nodes_upper[edges[j][1]])
                         reachable.add(nodes_lower[edges[j][1]])
                         changed2 = true
@@ -511,72 +566,93 @@ function find_inf(node){
             }
         }
         //If all Selected Nodes are Contained within the Reachable Nodes, the Starting Node is a Potential Infimum
-        if (subset(reachable, selection)){
-            if (infimum == undefined || element.attr("name") > infimum.attr("name")){
+        if (subset(reachable, selection)) {
+            if (infimum === undefined || element.attr("name") > infimum.attr("name")) {
                 infimum = element
             }
         }
     })
     mark_lower(infimum)
 }
-function reset_marking(){
 
-    for (let i = 0; i < nodes_upper.length; i++){
+function reset_marking() {
+
+    for (let i = 0; i < nodes_upper.length; i++) {
         nodes_upper[i].stroke({color: style.getPropertyValue('--default-black')})
         nodes_lower[i].stroke({color: style.getPropertyValue('--default-black')})
         labels_upper[i].font({weight: 'regular', fill: style.getPropertyValue('--intent-color')})
         labels_lower[i].font({weight: 'regular', fill: style.getPropertyValue('--extent-color')})
-        if( nodes_upper[i].attr('fill') == style.getPropertyValue('--intent-color') ||
-            nodes_upper[i].attr('fill') == style.getPropertyValue('--greyed-out')){
-            nodes_upper[i].fill(style.getPropertyValue('--intent-faint'))}
-        if( nodes_lower[i].attr('fill') == style.getPropertyValue('--extent-color') ||
-            nodes_lower[i].attr('fill') == style.getPropertyValue('--greyed-out')){
-            nodes_lower[i].fill(style.getPropertyValue('--extent-faint'))}
+        if (nodes_upper[i].attr('fill') === style.getPropertyValue('--intent-color') ||
+            nodes_upper[i].attr('fill') === style.getPropertyValue('--greyed-out')) {
+            nodes_upper[i].fill(style.getPropertyValue('--intent-faint'))
         }
-    for (let j = 0; j < edge_objects.length; j++){
+        if (nodes_lower[i].attr('fill') === style.getPropertyValue('--extent-color') ||
+            nodes_lower[i].attr('fill') === style.getPropertyValue('--greyed-out')) {
+            nodes_lower[i].fill(style.getPropertyValue('--extent-faint'))
+        }
+    }
+    for (let j = 0; j < edge_objects.length; j++) {
         edge_objects[j].stroke({color: style.getPropertyValue('--default-black'), width: 5})
     }
 
 }
-function reset_selection(){
+
+function reset_selection() {
     selection.clear()
     reset_marking()
 }
-function highlight_selection(selection){
+
+function highlight_selection(selection) {
 
     selection.forEach(node => {
         let name = node.attr("name")
         nodes_upper[name].stroke({color: style.getPropertyValue('--highlight-color')})
         nodes_lower[name].stroke({color: style.getPropertyValue('--highlight-color')})
 
-        if (selection_type == style.getPropertyValue('--attribute')){
-            labels_upper[name].font({weight: 'bold', fill: style.getPropertyValue('--intent-color')})}
-        if (selection_type == style.getPropertyValue('--object')){
-            labels_lower[name].font({weight: 'bold', fill: style.getPropertyValue('--extent-color')})}
+        if (selection_type === style.getPropertyValue('--attribute')) {
+            labels_upper[name].font({weight: 'bold', fill: style.getPropertyValue('--intent-color')})
+        }
+        if (selection_type === style.getPropertyValue('--object')) {
+            labels_lower[name].font({weight: 'bold', fill: style.getPropertyValue('--extent-color')})
+        }
     })
 
 }
-function grey_out(){
 
-    for (let i = 0; i < nodes_upper.length; i++){
+function grey_out() {
+
+    for (let i = 0; i < nodes_upper.length; i++) {
         nodes_upper[i].stroke({color: style.getPropertyValue('--greyed-out')})
         nodes_lower[i].stroke({color: style.getPropertyValue('--greyed-out')})
         labels_upper[i].font({weight: 'regular', fill: style.getPropertyValue('--greyed-out')})
         labels_lower[i].font({weight: 'regular', fill: style.getPropertyValue('--greyed-out')})
-        if( nodes_upper[i].attr('fill') == style.getPropertyValue('--intent-faint') ||
-            nodes_upper[i].attr('fill') == style.getPropertyValue('--extent-faint')){
-            nodes_upper[i].fill(style.getPropertyValue('--greyed-out'))}
-        if( nodes_lower[i].attr('fill') == style.getPropertyValue('--intent-faint') ||
-            nodes_lower[i].attr('fill') == style.getPropertyValue('--extent-faint')){
-            nodes_lower[i].fill(style.getPropertyValue('--greyed-out'))}
+        if (nodes_upper[i].attr('fill') === style.getPropertyValue('--intent-faint') ||
+            nodes_upper[i].attr('fill') === style.getPropertyValue('--extent-faint')) {
+            nodes_upper[i].fill(style.getPropertyValue('--greyed-out'))
+        }
+        if (nodes_lower[i].attr('fill') === style.getPropertyValue('--intent-faint') ||
+            nodes_lower[i].attr('fill') === style.getPropertyValue('--extent-faint')) {
+            nodes_lower[i].fill(style.getPropertyValue('--greyed-out'))
+        }
     }
-    for (let j = 0; j < edge_objects.length; j++){
+    for (let j = 0; j < edge_objects.length; j++) {
         edge_objects[j].stroke({color: style.getPropertyValue('--greyed-out'), width: 5})
     }
 
 }
-function delete_all(){
+
+function delete_all() {
     reset_selection()
+    nodes = []
+    positions = []
+    edges = []
+
+    toplabels = []
+    botlabels = []
+
+    xmax = 0
+    ymax = 0
+
     edge_objects = []
     nodes_upper = []
     nodes_lower = []

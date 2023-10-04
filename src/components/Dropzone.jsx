@@ -52,7 +52,7 @@ function dropHandler(ev, setFile) {
             let json = JSON.parse(event.target.result);
             setFile(json);
         } catch (e) {
-            alert(`Failed to load json file: ${e}`)
+           console.error(e);
         }
     }
 }

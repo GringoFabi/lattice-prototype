@@ -15,9 +15,9 @@ function Lattice({file}) {
     createEffect(() => svgContainer().addTo(svgWrapper))
 
     return (
-        <div class="box" ref={ref => svgWrapper = ref}>
-
-        </div>
+        <>
+            <div className="box" ref={ref => svgWrapper = ref}></div>
+        </>
     )
 }
 

@@ -63,6 +63,15 @@ function init(container, wrapper) {
         })
 }
 
+function nodeFromLattice(lattice, index) {
+    let node = lattice[0][index]
+    let position = lattice[1][index]
+    let toplabel = lattice[3][index]
+    let botlabel = lattice[4][index]
+    let valuation = lattice[5][index]
+    console.log({node, position, toplabel, botlabel, valuation})
+}
+
 export function draw_lattice(file, container, wrapper) {
     init(container, wrapper)
     const lattice = readJSON(file)
@@ -137,6 +146,9 @@ export function draw_lattice(file, container, wrapper) {
             })
             .mouseup(function (e) {
                 endDrag(e, this)
+            })
+            .mouseover(function (e) {
+                nodeFromLattice(lattice, j)
             })
 
         if (labels_upper[j].text() === "") {

@@ -1,7 +1,6 @@
 import {SVG} from "@svgdotjs/svg.js";
 import {subset} from "./utility.js";
 
-
 const style = getComputedStyle(document.body);
 
 //Data Objects
@@ -11,7 +10,6 @@ let edges = []
 
 let toplabels = []
 let botlabels = []
-// valuations = lattice[5]
 
 let xmax = 0
 let ymax = 0
@@ -52,7 +50,7 @@ function init(container, wrapper) {
     });
 
     let parent = wrapper.parentElement;
-    draw.addTo(container).size(parent.clientWidth, parent.clientHeight).viewbox(`0 0 ${(parent.clientWidth)} ${(parent.clientHeight)}`)
+    draw.addTo(container).size(parent.clientWidth, parent.clientHeight).viewbox(`-300 0 ${(parent.clientWidth) + 50} ${(parent.clientHeight) + 50}`)
         .panZoom({
             panning: true,
             wheelZoom: true,
@@ -61,6 +59,15 @@ function init(container, wrapper) {
             zoomFactor: 0.1,
             panButton: 1
         })
+}
+
+function nodeFromLattice(lattice, index) {
+    let node = lattice[0][index]
+    let position = lattice[1][index]
+    let toplabel = lattice[3][index]
+    let botlabel = lattice[4][index]
+    let valuation = lattice[5][index]
+    console.log({node, position, toplabel, botlabel, valuation})
 }
 
 export function draw_lattice(file, container, wrapper) {
@@ -118,7 +125,7 @@ export function draw_lattice(file, container, wrapper) {
         valuations[j] = draw.text(String(valuations[j]))
             .move(positions[j][0] * (width / (2.2 * xmax)) + width / 2 + 30,
                 -(positions[j][1] * (height / (1.2 * ymax))) - 20 - buffer + height)
-            .font({fill: style.getPropertyValue('--default-black'), size: 30, family: 'Arial'})
+            .font({fill: style.getPropertyValue('--extent-color'), size: 30, family: 'Arial'})
 
         nodes_upper[j] = draw.path("M 0 0 L 25 0 A 1 1 0 0 0 -25 0 Z")
             .attr('name', j)
@@ -137,6 +144,9 @@ export function draw_lattice(file, container, wrapper) {
             })
             .mouseup(function (e) {
                 endDrag(e, this)
+            })
+            .mouseover(function (e) {
+                nodeFromLattice(lattice, j)
             })
 
         if (labels_upper[j].text() === "") {
@@ -175,17 +185,6 @@ export function draw_lattice(file, container, wrapper) {
 }
 
 function readJSON(json) {
-    // let nodes = []
-    // let positions = []
-    // let edges = []
-    // let toplabels = []
-    // let botlabels = []
-    // let valuations = []
-    //
-    // //Coordinates of Outmost Nodes on either Axis
-    // let xmax = 0
-    // let ymax = 0
-
     //Read Nodes, Positions and Labels
     for (let i = 0; i < json.nodes.length; i++) {
 

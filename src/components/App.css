@@ -1,9 +1,6 @@
-.card {
-  padding: 2em;
-}
-
 .caption {
   color: #888;
+  margin: 0;
 }
 
 .upload-prompt {
@@ -41,13 +38,13 @@
 }
 
 .main {
-  width: 100%;
   border: 1px solid #888;
   margin: 1em 1em 0 1em;
   padding: 1em;
   display: flex;
-  flex-direction: row-reverse;
-  align-items: flex-start;
+  flex-direction: row;
+  align-items: flex-end;
+  justify-content: space-between;
 }
 
 .drop-zone {
@@ -64,3 +61,8 @@
   height: inherit;
 }
 
+.reset-button {
+  position: absolute;
+  bottom: .25em;
+  left: 1em;
+}

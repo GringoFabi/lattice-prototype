@@ -6,18 +6,13 @@ import "./Lattice.css"
 
 function Lattice({file}) {
     const svgContainer = createMemo(() => SVG(), []);
-    // svgContainer().add(SVG().rect(100, 100).fill("#123456"))
-
     let svgWrapper;
 
     onMount(() => draw_lattice(file, svgContainer(), svgWrapper))
-
     createEffect(() => svgContainer().addTo(svgWrapper))
 
     return (
-        <>
-            <div className="box" ref={ref => svgWrapper = ref}></div>
-        </>
+        <div className="box" ref={ref => svgWrapper = ref}></div>
     )
 }
 

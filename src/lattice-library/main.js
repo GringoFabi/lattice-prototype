@@ -70,6 +70,29 @@ function nodeFromLattice(lattice, index) {
     console.log({node, position, toplabel, botlabel, valuation})
 }
 
+export function load_file(setFile){
+    let input = document.createElement('input');
+    input.type = 'file';
+
+    input.onchange = e => {
+
+        let file = e.target.files[0];
+        let reader = new FileReader();
+        reader.readAsText(file,'UTF-8')
+        reader.onload = readerEvent => {
+            try{
+                setFile(JSON.parse(readerEvent.target.result))
+            }
+            catch (e) {
+                alert("Failure loading Context File:\n"+e)
+            }
+        }
+
+    }
+
+    input.click();
+}
+
 export function draw_lattice(file, container, wrapper) {
     init(container, wrapper)
     const lattice = readJSON(file)

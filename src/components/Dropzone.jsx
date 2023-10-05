@@ -1,4 +1,5 @@
 import graph from "../assets/graph.svg";
+import {load_file} from "../lattice-library/main.js";
 
 
 function Dropzone({update}) {
@@ -9,7 +10,7 @@ function Dropzone({update}) {
              onDragOver={(event) => dragOver(event)}
         >
             <p className="upload-prompt">Drag and drop a json file or click&nbsp
-                <span className="upload" onClick={(event) => startUpload(event)}>here</span>
+                <span className="upload" onClick={(event) => startUpload(event, update)}>here</span>
                 , to start the
                 upload.</p>
             <img src={graph} className="back-ground" alt="background"/>
@@ -17,8 +18,9 @@ function Dropzone({update}) {
     )
 }
 
-function startUpload(ev) {
-    // loader();
+function startUpload(ev, setFile) {
+    ev.preventDefault();
+    load_file(setFile);
 }
 
 function dragOver(ev) {

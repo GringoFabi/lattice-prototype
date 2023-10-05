@@ -69,16 +69,16 @@ export function draw_lattice(file, container, wrapper) {
 
     delete_all()
 
-    let nodes = lattice[0]
-    let positions = lattice[1]
-    let edges = lattice[2]
+    nodes = lattice[0]
+    positions = lattice[1]
+    edges = lattice[2]
 
-    let toplabels = lattice[3]
-    let botlabels = lattice[4]
+    toplabels = lattice[3]
+    botlabels = lattice[4]
     valuations = lattice[5]
 
-    let xmax = lattice[6]
-    let ymax = lattice[7]
+    xmax = lattice[6]
+    ymax = lattice[7]
 
     //Draw Edges
     let buffer = 50
@@ -549,7 +549,6 @@ function find_inf(node) {
     sub_concepts.forEach(element => {
         let reachable = new Set()
         reachable.add(element)
-
         let changed2 = true
         while (changed2 === true) {
             changed2 = false

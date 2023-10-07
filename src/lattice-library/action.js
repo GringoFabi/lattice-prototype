@@ -6,6 +6,7 @@ export const Action = {
     SelectUpperLabel: 'SelectUpperLabel',
     SelectLowerLabel: 'SelectLowerLabel',
     HoverUpperNode: 'HoverUpperNode',
-    HoverLowerNode: 'HoverLowerNode'
+    HoverLowerNode: 'HoverLowerNode',
+    ClearSelection: 'ClearSelection'
 };
 

@@ -1,5 +1,7 @@
 import {SVG} from "@svgdotjs/svg.js";
 import {subset} from "./utility.js";
+import {log} from "./logging.js";
+import {Action} from "./action.js";
 
 const style = getComputedStyle(document.body);
 
@@ -46,17 +48,15 @@ function init(container, wrapper) {
         let a = Object.is(elementFromPoint, draw['node']);
         let b = Object.is(elementFromPoint, container);
         if (a || b || elementFromPoint.localName === "svg") {
-            reset_selection()
+            if (selection.size !== 0) {
+                log(Action.ClearSelection, null)
+                reset_selection()
+            }
         }
     });
 
-    let parent = wrapper.parentElement;
-    console.log(parent.clientWidth, parent.clientHeight)
-    debugger
-    let wrapperWidth = wrapper.clientWidth;
-    let wrapperHeight = wrapper.clientHeight;
-    console.log(wrapperWidth, wrapperHeight)
-    draw.addTo(container).size(wrapperWidth, wrapperHeight).viewbox(`-300 0 ${wrapperWidth + 50} ${wrapperHeight + 50}`)
+    let {clientWidth, clientHeight} = wrapper;
+    draw.addTo(container).size(clientWidth, clientHeight).viewbox(`-50 0 ${clientWidth + 50} ${clientHeight + 50}`)
         .panZoom({
             panning: true,
             wheelZoom: true,
@@ -144,22 +144,25 @@ export function draw_lattice(file, container, wrapper) {
     //Draw Nodes and Labels
     for (let j = 0; j < nodes.length; j++) {
 
+        let node = nodeFromLattice(lattice, j);
         labels_upper[j] = draw.text(String(toplabels[j]))
             .attr('name', (style.getPropertyValue('--label-upper-indicator') + String(j)))
-            .move(positions[j][0] * (width / (2.2 * xmax)) + width / 2 + 20,
-                -(positions[j][1] * (height / (1.2 * ymax))) - 60 - buffer + height)
+            .move(positions[j][0] * (width / (2.2 * xmax)) + width / 2 + 20 - 80,
+                -(positions[j][1] * (height / (1.2 * ymax))) - 60 - buffer + height )
             .font({fill: style.getPropertyValue('--intent-color'), size: 30, family: 'Arial'})
             .click(function () {
                 handle_downwards(this)
+                log(Action.SelectUpperLabel, node)
             })
 
         labels_lower[j] = draw.text(String(botlabels[j]))
             .attr('name', (style.getPropertyValue('--label-lower-indicator') + String(j)))
-            .move(positions[j][0] * (width / (2.2 * xmax)) + width / 2 + 20,
-                -(positions[j][1] * (height / (1.2 * ymax))) + 10 - buffer + height)
+            .move(positions[j][0] * (width / (2.2 * xmax)) + width / 2 + 20 - 40,
+                -(positions[j][1] * (height / (1.2 * ymax))) + 10 - buffer + height + 30)
             .font({fill: style.getPropertyValue('--extent-color'), size: 30, family: 'Arial'})
             .click(function () {
                 handle_upwards(this)
+                log(Action.SelectLowerLabel, node)
             })
 
         valuations_objects[j] = draw.text(String(valuations[j]))
@@ -175,18 +178,19 @@ export function draw_lattice(file, container, wrapper) {
             .stroke({color: style.getPropertyValue('--default-black'), width: 4, linecap: 'round', linejoin: 'round'})
             .click(function () {
                 handle_downwards(this)
+                log(Action.SelectUpperNode, node)
             })
             .mousedown(function (e) {
-                startDrag(e, this)
+                startDrag(e, this, node)
             })
             .mousemove(function (e) {
                 Drag(e, this)
             })
             .mouseup(function (e) {
-                endDrag(e, this)
+                endDrag(e, this, node)
             })
             .mouseover(function (e) {
-                console.log(nodeFromLattice(lattice, j))
+                log(Action.HoverUpperNode, node)
             })
 
         if (labels_upper[j].text() === "") {
@@ -204,15 +208,19 @@ export function draw_lattice(file, container, wrapper) {
             .stroke({color: style.getPropertyValue('--default-black'), width: 4, linecap: 'round', linejoin: 'round'})
             .click(function () {
                 handle_upwards(this)
+                log(Action.SelectLowerNode, node)
             })
             .mousedown(function (e) {
-                startDrag(e, this)
+                startDrag(e, this, node)
             })
             .mousemove(function (e) {
                 Drag(e, this)
             })
             .mouseup(function (e) {
-                endDrag(e, this)
+                endDrag(e, this, node)
+            })
+            .mouseover(function (e) {
+                log(Action.HoverLowerNode, node)
             })
 
         if (labels_lower[j].text() === "") {
@@ -255,7 +263,8 @@ function readJSON(json) {
     return [nodes, positions, edges, toplabels, botlabels, valuations, xmax, ymax]
 }
 
-function startDrag(e, node) {
+function startDrag(e, node, nodeData) {
+    log(Action.StartDrag, nodeData)
 
     //Only Add Node to Selection, if other Half is not Already Present
     let name = node.attr('name')
@@ -321,7 +330,8 @@ function Drag(e, node) {
     }
 }
 
-function endDrag(e, node) {
+function endDrag(e, node, nodeData) {
+    log(Action.EndDrag, nodeData)
     let name = node.attr('name')
     //Reset Drag Flag
     nodes_upper[name].attr('drag', 0)

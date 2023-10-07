@@ -21,6 +21,7 @@ let nodes_lower = []
 let labels_upper = []
 let labels_lower = []
 let valuations = []
+let valuations_objects = []
 
 let width = 800
 let height = 900
@@ -50,7 +51,12 @@ function init(container, wrapper) {
     });
 
     let parent = wrapper.parentElement;
-    draw.addTo(container).size(parent.clientWidth, parent.clientHeight).viewbox(`-300 0 ${(parent.clientWidth) + 50} ${(parent.clientHeight) + 50}`)
+    console.log(parent.clientWidth, parent.clientHeight)
+    debugger
+    let wrapperWidth = wrapper.clientWidth;
+    let wrapperHeight = wrapper.clientHeight;
+    console.log(wrapperWidth, wrapperHeight)
+    draw.addTo(container).size(wrapperWidth, wrapperHeight).viewbox(`-300 0 ${wrapperWidth + 50} ${wrapperHeight + 50}`)
         .panZoom({
             panning: true,
             wheelZoom: true,
@@ -64,10 +70,21 @@ function init(container, wrapper) {
 function nodeFromLattice(lattice, index) {
     let node = lattice[0][index]
     let position = lattice[1][index]
+    let edges = collectEdges(node.toString())
     let toplabel = lattice[3][index]
     let botlabel = lattice[4][index]
     let valuation = lattice[5][index]
-    console.log({node, position, toplabel, botlabel, valuation})
+    return {node, position, edges, toplabel, botlabel, valuation}
+}
+
+function collectEdges(node) {
+    let localEdges = []
+    edges.forEach((edge) => {
+        if (edge[0] === node || edge[1] === node) {
+            localEdges.push(edge)
+        }
+    })
+    return localEdges
 }
 
 export function load_file(setFile){
@@ -145,7 +162,7 @@ export function draw_lattice(file, container, wrapper) {
                 handle_upwards(this)
             })
 
-        valuations[j] = draw.text(String(valuations[j]))
+        valuations_objects[j] = draw.text(String(valuations[j]))
             .move(positions[j][0] * (width / (2.2 * xmax)) + width / 2 + 30,
                 -(positions[j][1] * (height / (1.2 * ymax))) - 20 - buffer + height)
             .font({fill: style.getPropertyValue('--extent-color'), size: 30, family: 'Arial'})
@@ -169,7 +186,7 @@ export function draw_lattice(file, container, wrapper) {
                 endDrag(e, this)
             })
             .mouseover(function (e) {
-                nodeFromLattice(lattice, j)
+                console.log(nodeFromLattice(lattice, j))
             })
 
         if (labels_upper[j].text() === "") {
@@ -343,7 +360,7 @@ function redrawNode(current_node, dragged_node, cursorX, cursorY, bounds, select
 
     labels_upper[name].move(posX + 43, posY - 50)
     labels_lower[name].move(posX + 43, posY + 20)
-    valuations[name].move(posX + 53, posY - 15)
+    valuations_objects[name].move(posX + 53, posY - 15)
 
     //Readraw Affected Edges
     selected_edges.forEach(element => {
@@ -680,6 +697,7 @@ function delete_all() {
     labels_upper = []
     labels_lower = []
     valuations = []
+    valuations_objects = []
     draw.each(function(i, children) {
         this.remove()
       }, true)

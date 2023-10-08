@@ -4,6 +4,7 @@ import Dropzone from "./Dropzone.jsx";
 import Footer from "./Footer.jsx";
 import Lattice from "./Lattice.jsx";
 import Legend from "./Legend.jsx";
+import {Environment} from "../env/environment.js";
 
 function App() {
     const [file, setFile] = createSignal(null)
@@ -18,7 +19,9 @@ function App() {
                 </Show>
                 <Legend />
             </div>
-            <Footer/>
+            <Show when={import.meta.env.MODE === Environment.Dev}>
+                <Footer/>
+            </Show>
         </>
     )
 }

@@ -1,10 +1,14 @@
-const logToConsole = true;
-const persistLogs = true;
-const localStorageLogs = true;
-const localStorageLimit = 100;
+const logToConsole = import.meta.env.VITE_LOG_TO_CONSOLE;
+const persistLogs = import.meta.env.VITE_PERSIST_LOGS;
+const localStorageLogs = import.meta.env.VITE_LOCAL_STORAGE_LOGS;
+const localStorageLimit = import.meta.env.VITE_LOCAL_STORAGE_LIMIT;
 
 const logs = [];
 const baseUrl = 'http://localhost:8000'
+
+export function start() {
+    console.log(logToConsole, persistLogs, localStorageLogs, localStorageLimit)
+}
 
 export function log(action, node) {
     if (logToConsole) {

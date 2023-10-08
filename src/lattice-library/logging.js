@@ -1,14 +1,10 @@
-const logToConsole = import.meta.env.VITE_LOG_TO_CONSOLE;
-const persistLogs = import.meta.env.VITE_PERSIST_LOGS;
-const localStorageLogs = import.meta.env.VITE_LOCAL_STORAGE_LOGS;
-const localStorageLimit = import.meta.env.VITE_LOCAL_STORAGE_LIMIT;
+const logToConsole = import.meta.env.VITE_LOG_TO_CONSOLE === 'true';
+const persistLogs = import.meta.env.VITE_PERSIST_LOGS === 'true';
+const localStorageLogs = import.meta.env.VITE_LOCAL_STORAGE_LOGS === 'true';
+const localStorageLimit = parseInt(import.meta.env.VITE_LOCAL_STORAGE_LIMIT);
 
 const logs = [];
 const baseUrl = 'http://localhost:8000'
-
-export function start() {
-    console.log(logToConsole, persistLogs, localStorageLogs, localStorageLimit)
-}
 
 export function log(action, node) {
     if (logToConsole) {
@@ -28,10 +24,6 @@ export function log(action, node) {
     if (localStorageLogs) {
         writeLogToLocalStorage(log)
     }
-}
-
-export function printLogs() {
-    console.log(logs);
 }
 
 function saveSingleLog(log) {
@@ -55,7 +47,7 @@ function writeLogToLocalStorage(log) {
         localStorageLogs.push(log);
     }
 
-    if (localStorageLogs.length >= localStorageLimit) {
+    if (localStorageLogs.length >= localStorageLimit && persistLogs) {
         saveLogs(localStorageLogs);
         return
     }

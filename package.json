@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "local-logging": "vite --mode local-logging",
     "silent": "vite --mode silent",
     "production": "vite --mode production",
     "build": "vite build",

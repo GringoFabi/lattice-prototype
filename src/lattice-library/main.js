@@ -6,6 +6,7 @@ import {Action} from "./action.js";
 const style = getComputedStyle(document.body);
 
 //Data Objects
+let lattice = []
 let nodes = []
 let positions = []
 let edges = []
@@ -32,18 +33,22 @@ let height = 900
 let draw = SVG()
 
 //Variables for Node Selection
-
 let selection = new Set()
 let selection_type = ""
 let selected_edges = new Set()
 let selectionData = []
+
 //Dragging Boundaries
 let bounds = {}
 let box;
 
-let updater = () => {};
-export function bindSelectionUpdates(setter) {
-    updater = setter
+let updateSelection = () => {};
+let updateSuperConcept = () => {};
+let updateSubConcept = () => {};
+export function bindSelectionUpdates(setSelection, setSuperConcept, setSubConcept) {
+    updateSelection = setSelection
+    updateSuperConcept = setSuperConcept
+    updateSubConcept = setSubConcept
 }
 
 Array.prototype.addIfUnique = function (item) {
@@ -55,13 +60,13 @@ Array.prototype.addIfUnique = function (item) {
 Set.prototype.addToSession = function (node, data) {
     selection.add(node)
     selectionData.addIfUnique(data)
-    updater([...selectionData])
+    updateSelection([...selectionData])
 }
 
 Set.prototype.clearSession = function () {
     selection.clear()
     selectionData = []
-    updater(selectionData)
+    updateSelection(selectionData)
 }
 
 function init(container, wrapper) {
@@ -91,7 +96,7 @@ function init(container, wrapper) {
         })
 }
 
-function nodeFromLattice(lattice, index) {
+export function nodeFromLattice(index) {
     let node = lattice[0][index]
     let position = lattice[1][index]
     let edges = collectEdges(node.toString())
@@ -136,8 +141,7 @@ export function load_file(setFile){
 
 export function draw_lattice(file, container, wrapper) {
     init(container, wrapper)
-    const lattice = readJSON(file)
-
+    lattice = readJSON(file)
     delete_all()
 
     nodes = lattice[0]
@@ -168,7 +172,7 @@ export function draw_lattice(file, container, wrapper) {
     //Draw Nodes and Labels
     for (let j = 0; j < nodes.length; j++) {
 
-        let node = nodeFromLattice(lattice, j);
+        let node = nodeFromLattice(j);
         labels_upper[j] = draw.text(String(toplabels[j]))
             .attr('name', (style.getPropertyValue('--label-upper-indicator') + String(j)))
             .move(positions[j][0] * (width / (2.2 * xmax)) + width / 2 + 20 - 80,
@@ -483,8 +487,7 @@ function mark_upper(node) {
 
     //Find and Mark all Edges to Greater Nodes
     //Mark Appropriate Node Halves
-    let super_concepts = new Set()
-    super_concepts.add(String(name))
+    let super_concepts = new Set([String(name)])
     let changed = true
     while (changed === true) {
         changed = false
@@ -492,7 +495,7 @@ function mark_upper(node) {
 
             if (super_concepts.has(String(edges[i][0])) && edge_objects[i].stroke() === style.getPropertyValue('--greyed-out')) {
 
-                edge_objects[i].stroke({color: style.getPropertyValue('--intent-color'), width: 8})
+                edge_objects[i].stroke({color: style.getPropertyValue('--intent-color'), width: 5})
                 changed = true
                 super_concepts.add(edges[i][1])
                 nodes_lower[edges[i][1]].stroke({color: style.getPropertyValue('--default-black')})
@@ -505,6 +508,8 @@ function mark_upper(node) {
             }
         }
     }
+    updateSubConcept([])
+    updateSuperConcept([...super_concepts])
 }
 
 function mark_lower(node) {
@@ -528,7 +533,7 @@ function mark_lower(node) {
 
             if (sub_concepts.has(String(edges[i][1])) && edge_objects[i].stroke() === style.getPropertyValue('--greyed-out')) {
 
-                edge_objects[i].stroke({color: style.getPropertyValue('--extent-color'), width: 8})
+                edge_objects[i].stroke({color: style.getPropertyValue('--extent-color'), width: 5})
                 changed = true
                 sub_concepts.add(edges[i][0])
                 nodes_lower[edges[i][0]].stroke({color: style.getPropertyValue('--default-black')})
@@ -541,6 +546,8 @@ function mark_lower(node) {
             }
         }
     }
+    updateSubConcept([...sub_concepts])
+    updateSuperConcept([])
 }
 
 function find_sup(node) {

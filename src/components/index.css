@@ -115,3 +115,9 @@ button:focus-visible {
   border: 1px solid #242424;
   padding: 1em;
 }
+
+.line {
+  width: 100%;
+  border-color: #242424;
+  background-color: #242424;
+}

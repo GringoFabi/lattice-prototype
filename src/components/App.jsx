@@ -7,13 +7,15 @@ import Legend from './Legend.jsx';
 import {Environment} from '../env/environment.js';
 import {bindSelectionUpdates} from '../lattice-library/main.js';
 import Navigation from './navigation/Navigation.jsx';
+import {Portal} from "solid-js/web";
 
 const App = () => {
     const [file, setFile] = createSignal(null);
     const [selection, setSelection] = createSignal([]);
     const [superConcept, setSuperConcept] = createSignal(null);
     const [subConcept, setSubConcept] = createSignal(null);
-    bindSelectionUpdates(setSelection, setSuperConcept, setSubConcept);
+    const [hoverNode, setHoverNode] = createSignal(null)
+    bindSelectionUpdates(setSelection, setSuperConcept, setSubConcept, setHoverNode);
 
     return (
         <>
@@ -31,6 +33,25 @@ const App = () => {
                     <Legend />
                 </div>
             </div>
+            <Show when={hoverNode()}>
+
+                <Portal>
+                    <div className="popup" style={{
+                        position: 'absolute',
+                        top: `${hoverNode().coordinates.y}`,
+                        left: `${hoverNode().coordinates.x}`
+                    }}
+                    >
+                        <h3 style={{margin: 0}}>Node: {hoverNode().node.node}</h3>
+                        <hr className="line"/>
+                        <p>{hoverNode().coordinates.x}</p>
+                        <p>{hoverNode().coordinates.y}</p>
+                    </div>
+
+
+                </Portal>
+
+            </Show>
             <Show when={import.meta.env.MODE === Environment.Dev}>
                 <Footer/>
             </Show>

@@ -2,12 +2,10 @@ import solidLogo from '../assets/solid.svg'
 import viteLogo from '/vite.svg'
 import './Footer.css'
 
-function Footer() {
-
-
+const Footer = () => {
     return (
-        <div class="footer">
-            <p class="caption">Built with</p>
+        <div className="footer">
+            <p className="caption">Built with</p>
             <a href="https://vitejs.dev" target="_blank">
                 <img src={viteLogo} className="logo" alt="Vite logo"/>
             </a>

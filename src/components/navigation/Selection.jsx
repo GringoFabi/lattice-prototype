@@ -1,6 +1,5 @@
 import {For, Match, Switch} from 'solid-js';
 
-
 const Selection = ({selection}) => {
     return (<>
         <hr style="width: 100%"></hr>

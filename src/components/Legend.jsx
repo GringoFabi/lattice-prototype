@@ -1,4 +1,4 @@
-import StandardNode from "./StandardNode.jsx";
+import StandardNode from './StandardNode.jsx';
 
 
 const Legend = () => {

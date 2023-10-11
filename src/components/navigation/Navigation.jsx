@@ -1,7 +1,7 @@
 import './navigation.css'
-import SubConcepts from "./SubConcepts.jsx";
-import SuperConcepts from "./SuperConcepts.jsx";
-import Selection from "./Selection.jsx";
+import SubConcepts from './SubConcepts.jsx';
+import SuperConcepts from './SuperConcepts.jsx';
+import Selection from './Selection.jsx';
 
 const Navigation = ({selection, superConcept, subConcept}) => {
     return (<div className="card">

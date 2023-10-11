@@ -1,6 +1,5 @@
 import {For, Show} from 'solid-js';
 
-
 const Concept = ({concept, labels, type, name}) => {
     return (<Show when={concept.length > 0}>
         <hr style="width: 100%"></hr>

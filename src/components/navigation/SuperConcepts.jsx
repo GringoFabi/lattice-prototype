@@ -1,7 +1,6 @@
 import {nodeFromLattice} from '../../lattice-library/main.js';
 import Concept from './Concept.jsx';
 
-
 const type = 'Super Concepts';
 const name = 'Property';
 

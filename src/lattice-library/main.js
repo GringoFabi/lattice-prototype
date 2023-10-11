@@ -324,7 +324,7 @@ function startDrag(e, node, nodeData) {
     //Only Add Node to Selection, if other Half is not Already Present
     let name = node.attr('name')
     if (!(selection.has(nodes_upper[name]) || selection.has(nodes_lower[name]))) {
-        selection.addToSession(node, nodeData)
+        selection.add(node)
     }
     highlight_selection(selection)
     //Find Affected Edges and Compute Boundaries for all Selected Nodes
@@ -532,11 +532,11 @@ function mark_upper(node) {
 
                 if (nodes_upper[edges[i][1]].attr('fill') === style.getPropertyValue('--greyed-out')) {
                     nodes_upper[edges[i][1]].fill(style.getPropertyValue('--intent-color'))
-                    updateSuperConcept([...super_concepts])
                 }
             }
         }
     }
+    updateSuperConcept([...super_concepts])
     updateSubConcept([])
 }
 
@@ -570,11 +570,11 @@ function mark_lower(node) {
 
                 if (nodes_lower[edges[i][1]].attr('fill') === style.getPropertyValue('--greyed-out')) {
                     nodes_lower[edges[i][1]].fill(style.getPropertyValue('--extent-color'))
-                    updateSubConcept([...sub_concepts])
                 }
             }
         }
     }
+    updateSubConcept([...sub_concepts])
     updateSuperConcept([])
 }
 

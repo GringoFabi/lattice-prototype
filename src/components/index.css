@@ -36,18 +36,6 @@ body {
 
   --attribute: attribute;
   --object: object;
-
-
-  display: flex;
-  align-content: center;
-  width: 100%;
-  height: 100%;
-}
-
-.root {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
 }
 
 h1 {
@@ -104,6 +92,7 @@ button:focus-visible {
 .column {
   display: flex;
   flex-direction: column;
+  height: 100%
 }
 
 .card {

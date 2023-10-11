@@ -1,10 +1,10 @@
-import {SVG} from "@svgdotjs/svg.js";
-import "@svgdotjs/svg.panzoom.js"
-import {createEffect, createMemo, onMount} from "solid-js";
-import {draw_lattice} from "../lattice-library/main.js";
-import "./Lattice.css"
+import {SVG} from '@svgdotjs/svg.js';
+import '@svgdotjs/svg.panzoom.js'
+import {createEffect, createMemo, onMount} from 'solid-js';
+import {draw_lattice} from '../lattice-library/main.js';
+import './Lattice.css'
 
-function Lattice({file}) {
+const Lattice = ({file}) => {
     const svgContainer = createMemo(() => SVG(), []);
     let svgWrapper;
 

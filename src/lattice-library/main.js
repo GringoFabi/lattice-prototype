@@ -6,6 +6,7 @@ import {Action} from "./action.js";
 const style = getComputedStyle(document.body);
 
 //Data Objects
+let lattice = []
 let nodes = []
 let positions = []
 let edges = []
@@ -32,13 +33,43 @@ let height = 900
 let draw = SVG()
 
 //Variables for Node Selection
-
 let selection = new Set()
 let selection_type = ""
 let selected_edges = new Set()
+let selectionData = []
+
 //Dragging Boundaries
 let bounds = {}
 let box;
+
+let updateSelection = () => {};
+let updateSuperConcept = () => {};
+let updateSubConcept = () => {};
+export function bindSelectionUpdates(setSelection, setSuperConcept, setSubConcept) {
+    updateSelection = setSelection
+    updateSuperConcept = setSuperConcept
+    updateSubConcept = setSubConcept
+}
+
+Array.prototype.addIfUnique = function (item) {
+    if (!this.includes(item)) {
+        this.push(item)
+    }
+}
+
+Set.prototype.addToSession = function (node, data) {
+    selection.add(node)
+    selectionData.addIfUnique(data)
+    updateSelection([...selectionData])
+}
+
+Set.prototype.clearSession = function () {
+    selection.clear()
+    selectionData = []
+    updateSelection(selectionData)
+    updateSubConcept(null)
+    updateSuperConcept(null)
+}
 
 function init(container, wrapper) {
     box = container
@@ -67,7 +98,7 @@ function init(container, wrapper) {
         })
 }
 
-function nodeFromLattice(lattice, index) {
+export function nodeFromLattice(index) {
     let node = lattice[0][index]
     let position = lattice[1][index]
     let edges = collectEdges(node.toString())
@@ -112,8 +143,7 @@ export function load_file(setFile){
 
 export function draw_lattice(file, container, wrapper) {
     init(container, wrapper)
-    const lattice = readJSON(file)
-
+    lattice = readJSON(file)
     delete_all()
 
     nodes = lattice[0]
@@ -144,14 +174,14 @@ export function draw_lattice(file, container, wrapper) {
     //Draw Nodes and Labels
     for (let j = 0; j < nodes.length; j++) {
 
-        let node = nodeFromLattice(lattice, j);
+        let node = nodeFromLattice(j);
         labels_upper[j] = draw.text(String(toplabels[j]))
             .attr('name', (style.getPropertyValue('--label-upper-indicator') + String(j)))
             .move(positions[j][0] * (width / (2.2 * xmax)) + width / 2 + 20 - 80,
                 -(positions[j][1] * (height / (1.2 * ymax))) - 60 - buffer + height )
             .font({fill: style.getPropertyValue('--intent-color'), size: 30, family: 'Arial'})
             .click(function () {
-                handle_downwards(this)
+                handle_downwards(this, node)
                 log(Action.SelectUpperLabel, node)
             })
 
@@ -161,7 +191,7 @@ export function draw_lattice(file, container, wrapper) {
                 -(positions[j][1] * (height / (1.2 * ymax))) + 10 - buffer + height + 30)
             .font({fill: style.getPropertyValue('--extent-color'), size: 30, family: 'Arial'})
             .click(function () {
-                handle_upwards(this)
+                handle_upwards(this, node)
                 log(Action.SelectLowerLabel, node)
             })
 
@@ -177,7 +207,7 @@ export function draw_lattice(file, container, wrapper) {
                 , -(positions[j][1] * (height / (1.2 * ymax))) - 25 - buffer + height)
             .stroke({color: style.getPropertyValue('--default-black'), width: 4, linecap: 'round', linejoin: 'round'})
             .click(function () {
-                handle_downwards(this)
+                handle_downwards(this, node)
                 log(Action.SelectUpperNode, node)
             })
             .mousedown(function (e) {
@@ -207,7 +237,7 @@ export function draw_lattice(file, container, wrapper) {
                 , -(positions[j][1] * (height / (1.2 * ymax))) - buffer + height)
             .stroke({color: style.getPropertyValue('--default-black'), width: 4, linecap: 'round', linejoin: 'round'})
             .click(function () {
-                handle_upwards(this)
+                handle_upwards(this, node)
                 log(Action.SelectLowerNode, node)
             })
             .mousedown(function (e) {
@@ -269,7 +299,7 @@ function startDrag(e, node, nodeData) {
     //Only Add Node to Selection, if other Half is not Already Present
     let name = node.attr('name')
     if (!(selection.has(nodes_upper[name]) || selection.has(nodes_lower[name]))) {
-        selection.add(node)
+        selection.addToSession(node, nodeData)
     }
     highlight_selection(selection)
     //Find Affected Edges and Compute Boundaries for all Selected Nodes
@@ -386,7 +416,7 @@ function redrawNode(current_node, dragged_node, cursorX, cursorY, bounds, select
     })
 }
 
-function handle_upwards(node) {
+function handle_upwards(node, nodeData) {
     reset_marking()
     if (selection_type === style.getPropertyValue('--attribute')) {
         reset_selection()
@@ -405,7 +435,7 @@ function handle_upwards(node) {
 
     //Check if Other Half is Alredy Present
     if (!selection.has(nodes_upper[name])) {
-        selection.add(node)
+        selection.addToSession(node, nodeData)
     }
     grey_out()
     if (selection.size > 1) {
@@ -416,7 +446,7 @@ function handle_upwards(node) {
     highlight_selection(selection)
 }
 
-function handle_downwards(node) {
+function handle_downwards(node, nodeData) {
     reset_marking()
     if (selection_type === style.getPropertyValue('--object')) {
         reset_selection()
@@ -436,7 +466,7 @@ function handle_downwards(node) {
 
     //Check if Other Half is Alredy Present
     if (!selection.has(nodes_lower[name])) {
-        selection.add(node)
+        selection.addToSession(node, nodeData)
     }
     grey_out()
     if (selection.size > 1) {
@@ -468,7 +498,7 @@ function mark_upper(node) {
 
             if (super_concepts.has(String(edges[i][0])) && edge_objects[i].stroke() === style.getPropertyValue('--greyed-out')) {
 
-                edge_objects[i].stroke({color: style.getPropertyValue('--intent-color'), width: 8})
+                edge_objects[i].stroke({color: style.getPropertyValue('--intent-color'), width: 5})
                 changed = true
                 super_concepts.add(edges[i][1])
                 nodes_lower[edges[i][1]].stroke({color: style.getPropertyValue('--default-black')})
@@ -477,10 +507,12 @@ function mark_upper(node) {
 
                 if (nodes_upper[edges[i][1]].attr('fill') === style.getPropertyValue('--greyed-out')) {
                     nodes_upper[edges[i][1]].fill(style.getPropertyValue('--intent-color'))
+                    updateSuperConcept([...super_concepts])
                 }
             }
         }
     }
+    updateSubConcept([])
 }
 
 function mark_lower(node) {
@@ -504,7 +536,7 @@ function mark_lower(node) {
 
             if (sub_concepts.has(String(edges[i][1])) && edge_objects[i].stroke() === style.getPropertyValue('--greyed-out')) {
 
-                edge_objects[i].stroke({color: style.getPropertyValue('--extent-color'), width: 8})
+                edge_objects[i].stroke({color: style.getPropertyValue('--extent-color'), width: 5})
                 changed = true
                 sub_concepts.add(edges[i][0])
                 nodes_lower[edges[i][0]].stroke({color: style.getPropertyValue('--default-black')})
@@ -513,10 +545,12 @@ function mark_lower(node) {
 
                 if (nodes_lower[edges[i][1]].attr('fill') === style.getPropertyValue('--greyed-out')) {
                     nodes_lower[edges[i][1]].fill(style.getPropertyValue('--extent-color'))
+                    updateSubConcept([...sub_concepts])
                 }
             }
         }
     }
+    updateSuperConcept([])
 }
 
 function find_sup(node) {
@@ -646,7 +680,7 @@ function reset_marking() {
 }
 
 function reset_selection() {
-    selection.clear()
+    selection.clearSession()
     reset_marking()
 }
 

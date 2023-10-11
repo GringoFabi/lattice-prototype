@@ -1,9 +1,8 @@
-import graph from "../assets/graph.svg";
-import {load_file} from "../lattice-library/main.js";
+import graph from '../assets/graph.svg';
+import {load_file} from '../lattice-library/main.js';
 
 
-function Dropzone({update}) {
-
+const Dropzone = ({update}) => {
     return (
         <div className="drop-zone"
              onDrop={(event) => dropHandler(event, update)}
@@ -42,7 +41,7 @@ function dropHandler(ev, setFile) {
     })
 
     if (!item) {
-        alert("No valid json file provided")
+        alert('No valid json file provided')
         return
     }
 

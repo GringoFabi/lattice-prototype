@@ -11,8 +11,8 @@ import Navigation from './navigation/Navigation.jsx';
 const App = () => {
     const [file, setFile] = createSignal(null);
     const [selection, setSelection] = createSignal([]);
-    const [superConcept, setSuperConcept] = createSignal([]);
-    const [subConcept, setSubConcept] = createSignal([]);
+    const [superConcept, setSuperConcept] = createSignal(null);
+    const [subConcept, setSubConcept] = createSignal(null);
     bindSelectionUpdates(setSelection, setSuperConcept, setSubConcept);
 
     return (
@@ -25,7 +25,7 @@ const App = () => {
                 </Show>
                 <div className="column"
                      style={`justify-content: ${(selection().length === 0 ? 'flex-end' : 'space-between')}`}>
-                    <Show when={selection().length > 0}>
+                    <Show when={selection().length > 0 && superConcept() !== null && subConcept() !== null}>
                         <Navigation selection={selection} superConcept={superConcept} subConcept={subConcept}/>
                     </Show>
                     <Legend />

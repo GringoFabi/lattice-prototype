@@ -67,6 +67,8 @@ Set.prototype.clearSession = function () {
     selection.clear()
     selectionData = []
     updateSelection(selectionData)
+    updateSubConcept(null)
+    updateSuperConcept(null)
 }
 
 function init(container, wrapper) {
@@ -487,7 +489,8 @@ function mark_upper(node) {
 
     //Find and Mark all Edges to Greater Nodes
     //Mark Appropriate Node Halves
-    let super_concepts = new Set([String(name)])
+    let super_concepts = new Set()
+    super_concepts.add(String(name))
     let changed = true
     while (changed === true) {
         changed = false
@@ -504,12 +507,12 @@ function mark_upper(node) {
 
                 if (nodes_upper[edges[i][1]].attr('fill') === style.getPropertyValue('--greyed-out')) {
                     nodes_upper[edges[i][1]].fill(style.getPropertyValue('--intent-color'))
+                    updateSuperConcept([...super_concepts])
                 }
             }
         }
     }
     updateSubConcept([])
-    updateSuperConcept([...super_concepts])
 }
 
 function mark_lower(node) {
@@ -542,11 +545,11 @@ function mark_lower(node) {
 
                 if (nodes_lower[edges[i][1]].attr('fill') === style.getPropertyValue('--greyed-out')) {
                     nodes_lower[edges[i][1]].fill(style.getPropertyValue('--extent-color'))
+                    updateSubConcept([...sub_concepts])
                 }
             }
         }
     }
-    updateSubConcept([...sub_concepts])
     updateSuperConcept([])
 }
 

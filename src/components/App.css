@@ -66,15 +66,3 @@
   bottom: .25em;
   left: 1em;
 }
-
-.popup {
-  color: #242424;
-  z-index: 2;
-  background: rgba(255, 255, 255, 0.3);
-  border-radius: 16px;
-  box-shadow: 0 4px 30px rgba(128, 128, 128, 0.1);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border: 1px solid #242424;
-  padding: 1em;
-}

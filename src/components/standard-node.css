@@ -5,3 +5,10 @@
     max-width: 73px;
     max-height: 82px;
 }
+
+#svg-container {
+    min-width: 73px;
+    min-height: 82px;
+    max-width: 73px;
+    max-height: 82px;
+}

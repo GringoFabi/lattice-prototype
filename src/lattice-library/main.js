@@ -4,6 +4,8 @@ import {log} from "./logging.js";
 import {Action} from "./action.js";
 
 const style = getComputedStyle(document.body);
+const popupXOffset = 50;
+const popupYOffset = 50;
 
 //Data Objects
 let lattice = []
@@ -45,10 +47,12 @@ let box;
 let updateSelection = () => {};
 let updateSuperConcept = () => {};
 let updateSubConcept = () => {};
-export function bindSelectionUpdates(setSelection, setSuperConcept, setSubConcept) {
+let updateHoverNode = () => {};
+export function bindSelectionUpdates(setSelection, setSuperConcept, setSubConcept, setHoverNode) {
     updateSelection = setSelection
     updateSuperConcept = setSuperConcept
     updateSubConcept = setSubConcept
+    updateHoverNode = setHoverNode
 }
 
 Array.prototype.addIfUnique = function (item) {
@@ -99,13 +103,14 @@ function init(container, wrapper) {
 }
 
 export function nodeFromLattice(index) {
-    let node = lattice[0][index]
-    let position = lattice[1][index]
-    let edges = collectEdges(node.toString())
-    let toplabel = lattice[3][index]
-    let botlabel = lattice[4][index]
-    let valuation = lattice[5][index]
-    return {node, position, edges, toplabel, botlabel, valuation}
+    return {
+        node: lattice[0][index],
+        position: lattice[1][index],
+        edges: collectEdges(lattice[0][index].toString()),
+        toplabel: lattice[3][index],
+        botlabel: lattice[4][index],
+        valuation: lattice[5][index]
+    }
 }
 
 function collectEdges(node) {
@@ -221,6 +226,16 @@ export function draw_lattice(file, container, wrapper) {
             })
             .mouseover(function (e) {
                 log(Action.HoverUpperNode, node)
+                updateHoverNode({
+                    node: node,
+                    coordinates: {
+                        x: `${e.clientX + popupXOffset}px`,
+                        y: `${e.clientY - popupYOffset}px`
+                    }
+                })
+            })
+            .mouseout(function (e) {
+                updateHoverNode(null)
             })
 
         if (labels_upper[j].text() === "") {
@@ -228,7 +243,6 @@ export function draw_lattice(file, container, wrapper) {
         } else {
             nodes_upper[j].fill(style.getPropertyValue('--intent-faint'))
         }
-
 
         nodes_lower[j] = draw.path("M 0 0 L -25 0 A 1 1 0 0 0 25 0 Z")
             .attr('name', j)
@@ -251,6 +265,17 @@ export function draw_lattice(file, container, wrapper) {
             })
             .mouseover(function (e) {
                 log(Action.HoverLowerNode, node)
+                // const { node, toplabel, botlabel, position, edges, valuation} = node;
+                updateHoverNode({
+                    node: node,
+                    coordinates: {
+                        x: `${e.clientX + popupXOffset}px`,
+                        y: `${e.clientY - popupYOffset}px`
+                    }
+                })
+            })
+            .mouseout(function (e) {
+                updateHoverNode(null)
             })
 
         if (labels_lower[j].text() === "") {
@@ -299,7 +324,7 @@ function startDrag(e, node, nodeData) {
     //Only Add Node to Selection, if other Half is not Already Present
     let name = node.attr('name')
     if (!(selection.has(nodes_upper[name]) || selection.has(nodes_lower[name]))) {
-        selection.addToSession(node, nodeData)
+        selection.add(node)
     }
     highlight_selection(selection)
     //Find Affected Edges and Compute Boundaries for all Selected Nodes
@@ -507,11 +532,11 @@ function mark_upper(node) {
 
                 if (nodes_upper[edges[i][1]].attr('fill') === style.getPropertyValue('--greyed-out')) {
                     nodes_upper[edges[i][1]].fill(style.getPropertyValue('--intent-color'))
-                    updateSuperConcept([...super_concepts])
                 }
             }
         }
     }
+    updateSuperConcept([...super_concepts])
     updateSubConcept([])
 }
 
@@ -545,11 +570,11 @@ function mark_lower(node) {
 
                 if (nodes_lower[edges[i][1]].attr('fill') === style.getPropertyValue('--greyed-out')) {
                     nodes_lower[edges[i][1]].fill(style.getPropertyValue('--extent-color'))
-                    updateSubConcept([...sub_concepts])
                 }
             }
         }
     }
+    updateSubConcept([...sub_concepts])
     updateSuperConcept([])
 }
 

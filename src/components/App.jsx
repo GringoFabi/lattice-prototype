@@ -1,5 +1,5 @@
 import './App.css'
-import {createSignal, Show} from 'solid-js';
+import {createMemo, createSignal, Show} from 'solid-js';
 import Dropzone from './Dropzone.jsx';
 import Footer from './Footer.jsx';
 import Lattice from './Lattice.jsx';
@@ -7,14 +7,17 @@ import Legend from './Legend.jsx';
 import {Environment} from '../env/environment.js';
 import {bindSelectionUpdates} from '../lattice-library/main.js';
 import Navigation from './navigation/Navigation.jsx';
+import Popup from './hover/Popup.jsx';
 
 const App = () => {
     const [file, setFile] = createSignal(null);
     const [selection, setSelection] = createSignal([]);
     const [superConcept, setSuperConcept] = createSignal(null);
     const [subConcept, setSubConcept] = createSignal(null);
-    bindSelectionUpdates(setSelection, setSuperConcept, setSubConcept);
+    const [hoverNode, setHoverNode] = createSignal(null)
+    bindSelectionUpdates(setSelection, setSuperConcept, setSubConcept, setHoverNode);
 
+    const conceptsAreSet = createMemo(() => superConcept() !== null && subConcept() !== null)
     return (
         <>
             <div className="main">
@@ -23,14 +26,17 @@ const App = () => {
                         onClick={() => setFile(null)}>Reset</button>
                     <Lattice file={file()}/>
                 </Show>
+            </div>
+            <div className="side-panel">
                 <div className="column"
-                     style={`justify-content: ${(selection().length === 0 ? 'flex-end' : 'space-between')}`}>
-                    <Show when={selection().length > 0 && superConcept() !== null && subConcept() !== null}>
+                     style={`justify-content: ${(selection().length === 0 && !conceptsAreSet() ? 'flex-end' : 'space-between')}`}>
+                    <Show when={selection().length > 0 && conceptsAreSet()}>
                         <Navigation selection={selection} superConcept={superConcept} subConcept={subConcept}/>
                     </Show>
                     <Legend />
                 </div>
             </div>
+            <Popup node={hoverNode}/>
             <Show when={import.meta.env.MODE === Environment.Dev}>
                 <Footer/>
             </Show>

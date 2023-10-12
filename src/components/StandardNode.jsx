@@ -6,7 +6,7 @@ const style = getComputedStyle(document.body);
 const textSize = 16;
 
 const StandardNode = () => {
-    const svgContainer = createMemo(() => SVG(), []);
+    const svgContainer = createMemo(() => SVG().id("svg-container"), []);
     let svgWrapper;
     onMount(() => {
         const draw = SVG().addTo(svgContainer()).size(200, 200).viewbox('0 -10 200 200')
@@ -18,7 +18,7 @@ const StandardNode = () => {
 
         draw.text(String('Article'))
             .attr('name', (style.getPropertyValue('--label-lower-indicator') + 'Article'))
-            .move(10,50)
+            .move(10, 50)
             .font({fill: style.getPropertyValue('--extent-color'), size: textSize, family: 'Arial'})
 
         draw.text(String('00'))

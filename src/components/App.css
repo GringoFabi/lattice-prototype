@@ -38,13 +38,13 @@
 }
 
 .main {
+  position: absolute;
+  top: 1em;
+  left: 1em;
+  right: 1em;
+  bottom: 1em;
   border: 1px solid #888;
-  margin: 1em 1em 0 1em;
   padding: 1em;
-  display: flex;
-  flex-direction: row;
-  align-items: flex-end;
-  justify-content: space-between;
 }
 
 .drop-zone {
@@ -63,6 +63,15 @@
 
 .reset-button {
   position: absolute;
-  bottom: .25em;
+  top: 1em;
   left: 1em;
+}
+
+.side-panel {
+  max-width: 24em;
+
+  position: absolute;
+  top: 1.5em;
+  right: 1.5em;
+  bottom: 1.5em;
 }

@@ -9,33 +9,37 @@ const Selection = ({selection}) => {
         </span>
         <Switch>
             <Match when={isAnEntityWithProperty(selection())}>
-                {getEntity(selection())}
-                {getProperty(selection())}
+                {getEntity(selection()[0])}
+                {getProperty(selection()[0])}
             </Match>
-            <Match when={isAProperty(selection())}>
-                {getProperty(selection())}
+            <Match when={isOnlyAProperty(selection())}>
+                {getProperty(selection()[0])}
             </Match>
-            <Match when={isAnEntity(selection())}>
-                {getEntity(selection())}
+            <Match when={isOnlyAnEntity(selection())}>
+                {getEntity(selection()[0])}
             </Match>
         </Switch>
     </>)
 }
 
-function getProperty(selection) {
+export function getProperty(node) {
     return (<span>Property:&nbsp
-        <For each={selection[0].toplabel}>{(item, index) =>
+        <For each={node.toplabel}>{(item, index) =>
             <>{index() < 1 ? '' : ', '}{item}</>}
         </For>
     </span>);
 }
 
-function getEntity(selection) {
+export function getEntity(node) {
     return (<span>Entity:&nbsp
-        <For each={selection[0].botlabel}>{(item, index) =>
+        <For each={node.botlabel}>{(item, index) =>
             <>{index() < 1 ? '' : ', '}{item}</>}
         </For>
     </span>);
+}
+
+export function isEntityWithProperty(node) {
+    return node.toplabel.length > 0 && node.botlabel.length > 0;
 }
 
 function isAnEntityWithProperty(selection) {
@@ -43,25 +47,30 @@ function isAnEntityWithProperty(selection) {
         return false;
     }
 
-    const node = selection[0];
-    return node.toplabel.length > 0 && node.botlabel.length > 0;
+    return isEntityWithProperty(selection[0]);
 }
 
-function isAProperty(selection) {
+function isOnlyAProperty(selection) {
     if (selection.length > 1) {
         return false;
     }
 
-    const node = selection[0];
+    return isAProperty(selection[0]);
+}
+
+function isOnlyAnEntity(selection) {
+    if (selection.length > 1) {
+        return false;
+    }
+
+    return isAnEntity(selection[0]);
+}
+
+export function isAProperty(node) {
     return node.toplabel.length > 0 && node.botlabel.length === 0;
 }
 
-function isAnEntity(selection) {
-    if (selection.length > 1) {
-        return false;
-    }
-
-    const node = selection[0];
+export function isAnEntity(node) {
     return node.botlabel.length > 0 && node.toplabel.length === 0;
 }
 

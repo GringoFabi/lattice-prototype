@@ -14,8 +14,11 @@ const App = () => {
     const [selection, setSelection] = createSignal([]);
     const [superConcept, setSuperConcept] = createSignal(null);
     const [subConcept, setSubConcept] = createSignal(null);
-    const [hoverNode, setHoverNode] = createSignal(null)
-    bindSelectionUpdates(setSelection, setSuperConcept, setSubConcept, setHoverNode);
+    const [hoverNode, setHoverNode] = createSignal(null);
+    const [hoverSuperConcept, setHoverSuperConcept] = createSignal(null);
+    const [hoverSubConcept, setHoverSubConcept] = createSignal(null);
+    const [hoverState, setHoverState] = createSignal("");
+    bindSelectionUpdates(setSelection, setSuperConcept, setSubConcept, setHoverNode, setHoverSuperConcept, setHoverSubConcept, setHoverState);
 
     const conceptsAreSet = createMemo(() => superConcept() !== null && subConcept() !== null)
     return (
@@ -36,7 +39,7 @@ const App = () => {
                     <Legend />
                 </div>
             </div>
-            <Popup node={hoverNode}/>
+            <Popup node={hoverNode} superConcept={hoverSuperConcept} subConcept={hoverSubConcept} state={hoverState}/>
             <Show when={import.meta.env.MODE === Environment.Dev}>
                 <Footer/>
             </Show>

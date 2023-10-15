@@ -66,12 +66,3 @@
   top: 1em;
   left: 1em;
 }
-
-.side-panel {
-  max-width: 24em;
-
-  position: absolute;
-  top: 1.5em;
-  right: 1.5em;
-  bottom: 1.5em;
-}

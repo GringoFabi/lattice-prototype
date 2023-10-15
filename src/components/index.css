@@ -110,3 +110,10 @@ button:focus-visible {
   border-color: #242424;
   background-color: #242424;
 }
+
+.legend {
+  position: absolute;
+  bottom: 1.5em;
+  right: 1.5em;
+  max-width: 30%;
+}

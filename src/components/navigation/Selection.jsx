@@ -1,4 +1,5 @@
 import {For, Match, Switch} from 'solid-js';
+import {getEntity, getProperty, isAnEntity, isAProperty, isEntityWithProperty} from '../../node-util/node.jsx';
 
 const Selection = ({selection}) => {
     return (<>
@@ -20,26 +21,6 @@ const Selection = ({selection}) => {
             </Match>
         </Switch>
     </>)
-}
-
-export function getProperty(node) {
-    return (<span>Property:&nbsp
-        <For each={node.toplabel}>{(item, index) =>
-            <>{index() < 1 ? '' : ', '}{item}</>}
-        </For>
-    </span>);
-}
-
-export function getEntity(node) {
-    return (<span>Entity:&nbsp
-        <For each={node.botlabel}>{(item, index) =>
-            <>{index() < 1 ? '' : ', '}{item}</>}
-        </For>
-    </span>);
-}
-
-export function isEntityWithProperty(node) {
-    return node.toplabel.length > 0 && node.botlabel.length > 0;
 }
 
 function isAnEntityWithProperty(selection) {
@@ -66,12 +47,6 @@ function isOnlyAnEntity(selection) {
     return isAnEntity(selection[0]);
 }
 
-export function isAProperty(node) {
-    return node.toplabel.length > 0 && node.botlabel.length === 0;
-}
 
-export function isAnEntity(node) {
-    return node.botlabel.length > 0 && node.toplabel.length === 0;
-}
 
 export default Selection

@@ -1,7 +1,8 @@
-import {SVG} from "@svgdotjs/svg.js";
-import {subset} from "./utility.js";
-import {log} from "./logging.js";
-import {Action} from "./action.js";
+import {SVG} from '@svgdotjs/svg.js';
+import {subset} from './utility.js';
+import {log} from './logging.js';
+import {Action} from './action.js';
+import {HoverState} from '../node-util/node.jsx';
 
 const style = getComputedStyle(document.body);
 const popupXOffset = 50;
@@ -48,11 +49,17 @@ let updateSelection = () => {};
 let updateSuperConcept = () => {};
 let updateSubConcept = () => {};
 let updateHoverNode = () => {};
-export function bindSelectionUpdates(setSelection, setSuperConcept, setSubConcept, setHoverNode) {
+let updateHoverSuperConcept = () => {};
+let updateHoverSubConcept = () => {};
+let updateHoverState = () => {};
+export function bindSelectionUpdates(setSelection, setSuperConcept, setSubConcept, setHoverNode, setHoverSuperConcept, setHoverSubConcept, setHoverState) {
     updateSelection = setSelection
     updateSuperConcept = setSuperConcept
     updateSubConcept = setSubConcept
     updateHoverNode = setHoverNode
+    updateHoverSuperConcept = setHoverSuperConcept
+    updateHoverSubConcept = setHoverSubConcept
+    updateHoverState = setHoverState
 }
 
 Array.prototype.addIfUnique = function (item) {
@@ -226,6 +233,8 @@ export function draw_lattice(file, container, wrapper) {
             })
             .mouseover(function (e) {
                 log(Action.HoverUpperNode, node)
+                updateHoverSubConcept(nodesFromConcept(collectSubConcepts(this)))
+                updateHoverState(HoverState.Upper)
                 updateHoverNode({
                     node: node,
                     coordinates: {
@@ -236,6 +245,8 @@ export function draw_lattice(file, container, wrapper) {
             })
             .mouseout(function (e) {
                 updateHoverNode(null)
+                updateHoverSubConcept(null)
+                updateHoverState('')
             })
 
         if (labels_upper[j].text() === "") {
@@ -265,7 +276,8 @@ export function draw_lattice(file, container, wrapper) {
             })
             .mouseover(function (e) {
                 log(Action.HoverLowerNode, node)
-                // const { node, toplabel, botlabel, position, edges, valuation} = node;
+                updateHoverSuperConcept(nodesFromConcept(collectSuperConcepts(this)))
+                updateHoverState(HoverState.Lower)
                 updateHoverNode({
                     node: node,
                     coordinates: {
@@ -276,6 +288,8 @@ export function draw_lattice(file, container, wrapper) {
             })
             .mouseout(function (e) {
                 updateHoverNode(null)
+                updateHoverSuperConcept(null)
+                updateHoverState('')
             })
 
         if (labels_lower[j].text() === "") {
@@ -578,11 +592,17 @@ function mark_lower(node) {
     updateSuperConcept([])
 }
 
-function find_sup(node) {
+function nodesFromConcept(concepts) {
+    let names = [];
+    concepts.forEach(value => {
+        let name = value.attr("name")
+        names.push(name)
+    })
+    return names
+}
 
-    let super_concepts = new Set()
-    super_concepts.add(node)
-    let supremum
+function collectSuperConcepts(node) {
+    let super_concepts = new Set([node])
 
     //Find all Greater Reachable Nodes
     let changed = true
@@ -599,6 +619,15 @@ function find_sup(node) {
             }
         }
     }
+
+    nodesFromConcept(super_concepts);
+
+    return super_concepts;
+}
+
+function find_sup(node) {
+    let supremum;
+    const super_concepts = collectSuperConcepts(node);
 
     //Search in Opposite Direction
     super_concepts.forEach(element => {
@@ -631,20 +660,15 @@ function find_sup(node) {
     mark_upper(supremum)
 }
 
-function find_inf(node) {
-
-    let sub_concepts = new Set()
-    sub_concepts.add(node)
-    let infimum
+function collectSubConcepts(node) {
+    let sub_concepts = new Set([node])
 
     //Find all Smaller Reachable Nodes
     let changed = true
     while (changed === true) {
         changed = false
         for (let i = 0; i < edges.length; i++) {
-
             if (sub_concepts.has(nodes_upper[edges[i][1]])) {
-
                 if (!sub_concepts.has(nodes_upper[edges[i][0]])) {
                     sub_concepts.add(nodes_upper[edges[i][0]])
                     changed = true
@@ -652,6 +676,12 @@ function find_inf(node) {
             }
         }
     }
+    return sub_concepts;
+}
+
+function find_inf(node) {
+    let infimum;
+    let sub_concepts = collectSubConcepts(node);
 
     //Search in Opposite Direction
     sub_concepts.forEach(element => {

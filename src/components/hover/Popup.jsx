@@ -1,9 +1,20 @@
 import {createMemo, Match, Show, Switch} from 'solid-js';
 import {Portal} from 'solid-js/web';
 import './popup.css';
-import {getEntity, getProperty, isAnEntity, isAProperty, isEntityWithProperty} from "../navigation/Selection.jsx";
+import {
+    isAnEntity,
+    isAProperty,
+    isEmptyNode,
+    isEntityWithProperty
+} from '../../node-util/node.jsx';
+import {EmptyPopup} from './EmptyPopup.jsx';
+import {ComboPopup} from './ComboPopup.jsx';
+import {EntityPopup} from './EntityPopup.jsx';
+import {PropertyPopup} from './PropertyPopup.jsx';
 
-const Popup = ({node}) => {
+export const constraintNode = 'Constraint Node';
+
+export const Popup = ({node, superConcept, subConcept, state}) => {
     const getNode = createMemo(() => node() ? node().node : null)
     const coordinates = createMemo(() => node() ? node().coordinates : null)
 
@@ -15,24 +26,22 @@ const Popup = ({node}) => {
                     top: `${coordinates().y}`,
                     left: `${coordinates().x}`
                 }}>
-                    <h3 style={{margin: 0}}>
-                        <Switch>
-                            <Match when={isAProperty(getNode())}>
-                                {getProperty(getNode())}
-                            </Match>
-                            <Match when={isAnEntity(getNode()) || isEntityWithProperty(getNode())}>
-                                {getEntity(getNode())}
-                            </Match>
-                        </Switch>
-                    </h3>
-
-                    <hr className="line"/>
-                    <p>{coordinates().x}</p>
-                    <p>{coordinates().y}</p>
+                    <Switch fallback={<span>{constraintNode}</span>}>
+                        <Match when={isAProperty(getNode())}>
+                            <PropertyPopup node={getNode} state={state} superConcept={superConcept} subConcept={subConcept}/>
+                        </Match>
+                        <Match when={isAnEntity(getNode())}>
+                            <EntityPopup node={getNode} state={state} superConcept={superConcept} subConcept={subConcept}/>
+                        </Match>
+                        <Match when={isEntityWithProperty(getNode())}>
+                            <ComboPopup node={getNode} state={state} superConcept={superConcept} subConcept={subConcept}/>
+                        </Match>
+                        <Match when={isEmptyNode(getNode())}>
+                            <EmptyPopup node={getNode} state={state} superConcept={superConcept} subConcept={subConcept}/>
+                        </Match>
+                    </Switch>
                 </div>
             </Portal>
         </Show>
     )
 }
-
-export default Popup

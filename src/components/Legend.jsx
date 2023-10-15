@@ -4,7 +4,7 @@ import StandardNode from './StandardNode.jsx';
 const Legend = () => {
 
     return (
-        <div className="card">
+        <div className="card legend">
             <div className="column">
                 <h3 style="margin: 1px">Legend</h3>
                 <hr style="width: 100%"></hr>

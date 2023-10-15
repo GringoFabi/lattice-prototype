@@ -30,15 +30,10 @@ const App = () => {
                     <Lattice file={file()}/>
                 </Show>
             </div>
-            <div className="side-panel">
-                <div className="column"
-                     style={`justify-content: ${(selection().length === 0 && !conceptsAreSet() ? 'flex-end' : 'space-between')}`}>
-                    <Show when={selection().length > 0 && conceptsAreSet()}>
-                        <Navigation selection={selection} superConcept={superConcept} subConcept={subConcept}/>
-                    </Show>
-                    <Legend />
-                </div>
-            </div>
+            <Show when={selection().length > 0 && conceptsAreSet()}>
+                <Navigation selection={selection} superConcept={superConcept} subConcept={subConcept}/>
+            </Show>
+            <Legend />
             <Popup node={hoverNode} superConcept={hoverSuperConcept} subConcept={hoverSubConcept} state={hoverState}/>
             <Show when={import.meta.env.MODE === Environment.Dev}>
                 <Footer/>

@@ -5,7 +5,7 @@ import Selection from './Selection.jsx';
 import {Show} from 'solid-js';
 
 const Navigation = ({selection, superConcept, subConcept}) => {
-    return (<div className="card">
+    return (<div className="card navigation">
         <div className="column">
             <h3 style="margin: 1px">Navigation</h3>
             <Selection selection={selection}/>

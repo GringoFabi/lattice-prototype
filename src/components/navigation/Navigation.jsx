@@ -2,7 +2,7 @@ import './navigation.css'
 import SubConcepts from './SubConcepts.jsx';
 import SuperConcepts from './SuperConcepts.jsx';
 import Selection from './Selection.jsx';
-import {Show} from "solid-js";
+import {Show} from 'solid-js';
 
 const Navigation = ({selection, superConcept, subConcept}) => {
     return (<div className="card">

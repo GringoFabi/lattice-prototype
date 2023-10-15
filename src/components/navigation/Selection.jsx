@@ -1,5 +1,5 @@
 import {For, Match, Switch} from 'solid-js';
-import {getEntity, getProperty, isAnEntity, isAProperty, isEntityWithProperty} from "../../node-util/node.jsx";
+import {getEntity, getProperty, isAnEntity, isAProperty, isEntityWithProperty} from '../../node-util/node.jsx';
 
 const Selection = ({selection}) => {
     return (<>

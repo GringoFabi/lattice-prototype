@@ -7,7 +7,7 @@ import Legend from './Legend.jsx';
 import {Environment} from '../env/environment.js';
 import {bindSelectionUpdates} from '../lattice-library/main.js';
 import Navigation from './navigation/Navigation.jsx';
-import Popup from './hover/Popup.jsx';
+import {Popup} from './hover/Popup.jsx';
 
 const App = () => {
     const [file, setFile] = createSignal(null);

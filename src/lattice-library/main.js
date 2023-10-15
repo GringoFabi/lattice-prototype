@@ -1,8 +1,8 @@
-import {SVG} from "@svgdotjs/svg.js";
-import {subset} from "./utility.js";
-import {log} from "./logging.js";
-import {Action} from "./action.js";
-import {HoverState} from "../node-util/node.jsx";
+import {SVG} from '@svgdotjs/svg.js';
+import {subset} from './utility.js';
+import {log} from './logging.js';
+import {Action} from './action.js';
+import {HoverState} from '../node-util/node.jsx';
 
 const style = getComputedStyle(document.body);
 const popupXOffset = 50;
@@ -245,7 +245,8 @@ export function draw_lattice(file, container, wrapper) {
             })
             .mouseout(function (e) {
                 updateHoverNode(null)
-                updateSubConcept(null)
+                updateHoverSubConcept(null)
+                updateHoverState('')
             })
 
         if (labels_upper[j].text() === "") {
@@ -288,6 +289,7 @@ export function draw_lattice(file, container, wrapper) {
             .mouseout(function (e) {
                 updateHoverNode(null)
                 updateHoverSuperConcept(null)
+                updateHoverState('')
             })
 
         if (labels_lower[j].text() === "") {

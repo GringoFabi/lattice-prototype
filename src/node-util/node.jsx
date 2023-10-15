@@ -1,4 +1,4 @@
-import {For} from "solid-js";
+import {For} from 'solid-js';
 
 export const HoverState = {
     Upper: 'Upper',
@@ -11,7 +11,7 @@ export function isAProperty(node) {
 }
 
 export function isAnEntity(node) {
-    return node.botlabel.length > 0 && node.toplabel.length === 0;
+    return node.toplabel.length === 0 && node.botlabel.length > 0;
 }
 
 export function isEntityWithProperty(node) {
@@ -23,7 +23,6 @@ export function isEmptyNode(node) {
 }
 
 export function getProperty(node) {
-    console.log(node)
     return (<span>Property:&nbsp
         <For each={node.toplabel}>{(item, index) =>
             <>{index() < 1 ? '' : ', '}{item}</>}

@@ -1,20 +1,20 @@
-import {nodeFromLattice} from "../lattice-library/main.js";
+import {nodeFromLattice} from '../lattice-library/main.js';
 
-export const collectTopLabels = (concepts, skipReflexive = false) => {
+export const collectTopLabels = (node, concepts, skipReflexive = false) => {
     if (skipReflexive) {
-        concepts = concepts.slice(1);
+        concepts = concepts.slice(1)
     }
 
     let topLabels = [];
     concepts.forEach(item => {
         let node = nodeFromLattice(item);
-        topLabels.push(node.toplabel);
+        topLabels.push(...node.toplabel);
     })
 
     return topLabels;
 }
 
-export const collectBotLabels = (concepts, skipReflexive = false) => {
+export const collectBotLabels = (node, concepts, skipReflexive = false) => {
     if (skipReflexive) {
         concepts = concepts.slice(1);
     }
@@ -22,7 +22,7 @@ export const collectBotLabels = (concepts, skipReflexive = false) => {
     let botLabels = [];
     concepts.forEach(item => {
         let node = nodeFromLattice(item);
-        botLabels.push(node.botlabel);
+        botLabels.push(...node.botlabel);
     })
 
     return botLabels;

@@ -3,8 +3,15 @@
 ```bash
 $ yarn
 ```
+## Setup Local Environment
 
-### Learn more on the [Solid Website](https://solidjs.com) and come chat with us on our [Discord](https://discord.com/invite/solidjs)
+You may either simply create the .env files by yourself referring to the conventions set in Vite or you run the local
+[setup script](setup_envs.sh). Be aware to provide all necessary values, those being a name for `envType` (provide
+only a literal), a `logToConsole` value (boolean), a `persistLogs` value (boolean), a `localStorageLogs` value 
+(boolean) and a `localStorageLimit` value (number), e.g.:
+```shell
+./setup_envs.sh test true false true 100
+```
 
 ## Available Scripts
 

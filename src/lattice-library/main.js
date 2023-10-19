@@ -419,6 +419,7 @@ function endDrag(e, node, nodeData) {
     nodes_lower[name].attr('drag', 0)
     selected_edges.clear()
     bounds = {}
+    node.css('z-index', 1)
 }
 
 function redrawNode(current_node, dragged_node, cursorX, cursorY, bounds, selected_edges) {

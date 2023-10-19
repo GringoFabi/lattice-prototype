@@ -45,13 +45,21 @@ let selectionData = []
 let bounds = {}
 let box;
 
-let updateSelection = () => {};
-let updateSuperConcept = () => {};
-let updateSubConcept = () => {};
-let updateHoverNode = () => {};
-let updateHoverSuperConcept = () => {};
-let updateHoverSubConcept = () => {};
-let updateHoverState = () => {};
+let updateSelection = () => {
+};
+let updateSuperConcept = () => {
+};
+let updateSubConcept = () => {
+};
+let updateHoverNode = () => {
+};
+let updateHoverSuperConcept = () => {
+};
+let updateHoverSubConcept = () => {
+};
+let updateHoverState = () => {
+};
+
 export function bindSelectionUpdates(setSelection, setSuperConcept, setSubConcept, setHoverNode, setHoverSuperConcept, setHoverSubConcept, setHoverState) {
     updateSelection = setSelection
     updateSuperConcept = setSuperConcept
@@ -130,7 +138,7 @@ function collectEdges(node) {
     return localEdges
 }
 
-export function load_file(setFile){
+export function load_file(setFile) {
     let input = document.createElement('input');
     input.type = 'file';
 
@@ -138,13 +146,12 @@ export function load_file(setFile){
 
         let file = e.target.files[0];
         let reader = new FileReader();
-        reader.readAsText(file,'UTF-8')
+        reader.readAsText(file, 'UTF-8')
         reader.onload = readerEvent => {
-            try{
+            try {
                 setFile(JSON.parse(readerEvent.target.result))
-            }
-            catch (e) {
-                alert("Failure loading Context File:\n"+e)
+            } catch (e) {
+                alert("Failure loading Context File:\n" + e)
             }
         }
 
@@ -190,7 +197,7 @@ export function draw_lattice(file, container, wrapper) {
         labels_upper[j] = draw.text(String(toplabels[j]))
             .attr('name', (style.getPropertyValue('--label-upper-indicator') + String(j)))
             .move(positions[j][0] * (width / (2.2 * xmax)) + width / 2 + 20 - 80,
-                -(positions[j][1] * (height / (1.2 * ymax))) - 60 - buffer + height )
+                -(positions[j][1] * (height / (1.2 * ymax))) - 60 - buffer + height)
             .font({fill: style.getPropertyValue('--intent-color'), size: 30, family: 'Arial'})
             .click(function () {
                 handle_downwards(this, node)
@@ -231,23 +238,6 @@ export function draw_lattice(file, container, wrapper) {
             .mouseup(function (e) {
                 endDrag(e, this, node)
             })
-            .mouseover(function (e) {
-                log(Action.HoverUpperNode, node)
-                updateHoverSubConcept(nodesFromConcept(collectSubConcepts(this)))
-                updateHoverState(HoverState.Upper)
-                updateHoverNode({
-                    node: node,
-                    coordinates: {
-                        x: `${e.clientX + popupXOffset}px`,
-                        y: `${e.clientY - popupYOffset}px`
-                    }
-                })
-            })
-            .mouseout(function (e) {
-                updateHoverNode(null)
-                updateHoverSubConcept(null)
-                updateHoverState('')
-            })
 
         if (labels_upper[j].text() === "") {
             nodes_upper[j].fill(style.getPropertyValue('--clear'))
@@ -274,9 +264,37 @@ export function draw_lattice(file, container, wrapper) {
             .mouseup(function (e) {
                 endDrag(e, this, node)
             })
+
+        if (labels_lower[j].text() === "") {
+            nodes_lower[j].fill(style.getPropertyValue('--clear'))
+        } else {
+            nodes_lower[j].fill(style.getPropertyValue('--extent-faint'))
+        }
+
+        // label hover functionality
+        labels_upper[j]
+            .mouseover(function (e) {
+                log(Action.HoverUpperNode, node)
+                updateHoverSubConcept(nodesFromConcept(collectSubConcepts(nodes_upper[j])))
+                updateHoverState(HoverState.Upper)
+                updateHoverNode({
+                    node: node,
+                    coordinates: {
+                        x: `${e.clientX + popupXOffset}px`,
+                        y: `${e.clientY - popupYOffset}px`
+                    }
+                })
+            })
+            .mouseout(function () {
+                updateHoverNode(null)
+                updateHoverSubConcept(null)
+                updateHoverState('')
+            })
+
+        labels_lower[j]
             .mouseover(function (e) {
                 log(Action.HoverLowerNode, node)
-                updateHoverSuperConcept(nodesFromConcept(collectSuperConcepts(this)))
+                updateHoverSuperConcept(nodesFromConcept(collectSuperConcepts(nodes_lower[j])))
                 updateHoverState(HoverState.Lower)
                 updateHoverNode({
                     node: node,
@@ -286,18 +304,11 @@ export function draw_lattice(file, container, wrapper) {
                     }
                 })
             })
-            .mouseout(function (e) {
+            .mouseout(function () {
                 updateHoverNode(null)
                 updateHoverSuperConcept(null)
                 updateHoverState('')
             })
-
-        if (labels_lower[j].text() === "") {
-            nodes_lower[j].fill(style.getPropertyValue('--clear'))
-        } else {
-            nodes_lower[j].fill(style.getPropertyValue('--extent-faint'))
-        }
-
     }
 }
 
@@ -797,8 +808,8 @@ function delete_all() {
     labels_lower = []
     valuations = []
     valuations_objects = []
-    draw.each(function(i, children) {
+    draw.each(function (i, children) {
         this.remove()
-      }, true)
+    }, true)
 
 }

@@ -18,10 +18,6 @@ export function isEntityWithProperty(node) {
     return node.toplabel.length > 0 && node.botlabel.length > 0;
 }
 
-export function isEmptyNode(node) {
-    return node.toplabel.length === 0 && node.botlabel.length === 0;
-}
-
 export function getProperty(node) {
     return (<span>Property:&nbsp
         <For each={node.toplabel}>{(item, index) =>

@@ -1,13 +1,7 @@
 import {createMemo, Match, Show, Switch} from 'solid-js';
 import {Portal} from 'solid-js/web';
 import './popup.css';
-import {
-    isAnEntity,
-    isAProperty,
-    isEmptyNode,
-    isEntityWithProperty
-} from '../../node-util/node.jsx';
-import {EmptyPopup} from './EmptyPopup.jsx';
+import {isAnEntity, isAProperty, isEntityWithProperty} from '../../node-util/node.jsx';
 import {ComboPopup} from './ComboPopup.jsx';
 import {EntityPopup} from './EntityPopup.jsx';
 import {PropertyPopup} from './PropertyPopup.jsx';
@@ -35,9 +29,6 @@ export const Popup = ({node, superConcept, subConcept, state}) => {
                         </Match>
                         <Match when={isEntityWithProperty(getNode())}>
                             <ComboPopup node={getNode} state={state} superConcept={superConcept} subConcept={subConcept}/>
-                        </Match>
-                        <Match when={isEmptyNode(getNode())}>
-                            <EmptyPopup node={getNode} state={state} superConcept={superConcept} subConcept={subConcept}/>
                         </Match>
                     </Switch>
                 </div>

@@ -6,8 +6,6 @@ import {ComboPopup} from './ComboPopup.jsx';
 import {EntityPopup} from './EntityPopup.jsx';
 import {PropertyPopup} from './PropertyPopup.jsx';
 
-export const constraintNode = 'Constraint Node';
-
 export const Popup = ({node, superConcept, subConcept, state}) => {
     const getNode = createMemo(() => node() ? node().node : null)
     const coordinates = createMemo(() => node() ? node().coordinates : null)
@@ -20,7 +18,7 @@ export const Popup = ({node, superConcept, subConcept, state}) => {
                     top: `${coordinates().y}`,
                     left: `${coordinates().x}`
                 }}>
-                    <Switch fallback={<span>{constraintNode}</span>}>
+                    <Switch>
                         <Match when={isAProperty(getNode())}>
                             <PropertyPopup node={getNode} state={state} superConcept={superConcept} subConcept={subConcept}/>
                         </Match>

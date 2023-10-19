@@ -117,3 +117,20 @@ button:focus-visible {
   right: 1.5em;
   max-width: 30%;
 }
+
+svg text {
+  cursor: default;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  z-index: 0;
+}
+
+svg line {
+  z-index: -1;
+}
+
+svg path {
+  z-index: 1;
+}

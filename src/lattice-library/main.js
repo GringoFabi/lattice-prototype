@@ -230,12 +230,15 @@ export function draw_lattice(file, container, wrapper) {
                 log(Action.SelectUpperNode, node)
             })
             .mousedown(function (e) {
+                console.log("nodes upper mouse down")
                 startDrag(e, this, node)
             })
             .mousemove(function (e) {
+                console.log("nodes upper mouse move")
                 Drag(e, this)
             })
             .mouseup(function (e) {
+                console.log("nodes upper mouse up")
                 endDrag(e, this, node)
             })
 
@@ -256,12 +259,15 @@ export function draw_lattice(file, container, wrapper) {
                 log(Action.SelectLowerNode, node)
             })
             .mousedown(function (e) {
+                console.log("nodes lower mouse down")
                 startDrag(e, this, node)
             })
             .mousemove(function (e) {
+                console.log("nodes lower mouse move")
                 Drag(e, this)
             })
             .mouseup(function (e) {
+                console.log("nodes lower mouse up")
                 endDrag(e, this, node)
             })
 
@@ -387,13 +393,12 @@ function startDrag(e, node, nodeData) {
     }
 
     //Set Drag Flag
+    node.css('z-index', 2)
     nodes_upper[node.attr('name')].attr('drag', 1)
     nodes_lower[node.attr('name')].attr('drag', 1)
-
 }
 
 function Drag(e, node) {
-
     if (node.attr('drag') === 1) {
 
         let p = draw.point(e.clientX, e.clientY)
@@ -401,12 +406,8 @@ function Drag(e, node) {
         let cursorY = p.y
 
         selection.forEach(element => {
-
-            if (!(element.attr('name') === node.attr('name'))) {
-                redrawNode(element, node, cursorX, cursorY, bounds, selected_edges)
-            }
+            redrawNode(element, node, cursorX, cursorY, bounds, selected_edges)
         })
-        redrawNode(node, node, cursorX, cursorY, bounds, selected_edges)
     }
 }
 

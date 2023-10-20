@@ -24,7 +24,7 @@ const App = () => {
     return (
         <>
             <div className="main">
-                <Show when={file()} fallback={() => <Dropzone update={setFile}/>}>
+                <Show when={file()} fallback={<Dropzone update={setFile}/>}>
                     <button className="reset-button"
                         onClick={() => setFile(null)}>Reset</button>
                     <Lattice file={file()}/>

@@ -1,4 +1,5 @@
 import {SVG} from '@svgdotjs/svg.js';
+import '@svgdotjs/svg.draggable.js'
 import {subset} from './utility.js';
 import {log} from './logging.js';
 import {Action} from './action.js';
@@ -228,19 +229,30 @@ export function draw_lattice(file, container, wrapper) {
             .click(function () {
                 handle_downwards(this, node)
                 log(Action.SelectUpperNode, node)
-            })
-            .mousedown(function (e) {
-                console.log("nodes upper mouse down")
+            }).draggable()
+
+        nodes_upper[j]
+            .on('dragstart.namespace', function (e) {
+                console.log('start drag')
                 startDrag(e, this, node)
             })
-            .mousemove(function (e) {
-                console.log("nodes upper mouse move")
+            .on('dragmove.namespace', function (e) {
+                console.log('drag')
                 Drag(e, this)
             })
-            .mouseup(function (e) {
-                console.log("nodes upper mouse up")
+            .on('dragend.namespace', function (e) {
+                console.log('end drag')
                 endDrag(e, this, node)
             })
+        // .mousedown(function (e) {
+        //
+        // })
+        // .mousemove(function (e) {
+        //     Drag(e, this)
+        // })
+        // .mouseup(function (e) {
+        //     endDrag(e, this, node)
+        // })
 
         if (labels_upper[j].text() === "") {
             nodes_upper[j].fill(style.getPropertyValue('--clear'))
@@ -257,19 +269,28 @@ export function draw_lattice(file, container, wrapper) {
             .click(function () {
                 handle_upwards(this, node)
                 log(Action.SelectLowerNode, node)
-            })
-            .mousedown(function (e) {
-                console.log("nodes lower mouse down")
+            }).draggable()
+
+        nodes_lower[j]
+            .on('dragstart.namespace', function (e) {
                 startDrag(e, this, node)
             })
-            .mousemove(function (e) {
-                console.log("nodes lower mouse move")
+            .on('dragmove.namespace', function (e) {
                 Drag(e, this)
             })
-            .mouseup(function (e) {
-                console.log("nodes lower mouse up")
+            .on('dragend.namespace', function (e) {
                 endDrag(e, this, node)
             })
+
+        // .mousedown(function (e) {
+        //     startDrag(e, this, node)
+        // })
+        // .mousemove(function (e) {
+        //     Drag(e, this)
+        // })
+        // .mouseup(function (e) {
+        //     endDrag(e, this, node)
+        // })
 
         if (labels_lower[j].text() === "") {
             nodes_lower[j].fill(style.getPropertyValue('--clear'))

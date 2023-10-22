@@ -439,6 +439,13 @@
     "@jridgewell/resolve-uri" "^3.1.0"
     "@jridgewell/sourcemap-codec" "^1.4.14"
 
+"@svgdotjs/svg.draggable.js@^3.0.3":
+  version "3.0.3"
+  resolved "https://registry.yarnpkg.com/@svgdotjs/svg.draggable.js/-/svg.draggable.js-3.0.3.tgz#f8d1cf46dac9df440106e5fc940855f05897e274"
+  integrity sha512-gvktGsIe/hhU3hX7VJaB8maOV3dKLwQHtjUJN+B/4EahPBI8QWPLt3uuCUeP7sRujaOtrckZxLFhZUeQ5nK4Qw==
+  dependencies:
+    "@svgdotjs/svg.js" "^3.0.16"
+
 "@svgdotjs/svg.js@^3.0.16", "@svgdotjs/svg.js@^3.2.0":
   version "3.2.0"
   resolved "https://registry.yarnpkg.com/@svgdotjs/svg.js/-/svg.js-3.2.0.tgz#6baa8cef6778a93818ac18faa2055222e60aa644"

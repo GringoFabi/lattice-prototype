@@ -39,12 +39,10 @@
 
 .main {
   position: absolute;
-  top: 1em;
-  left: 1em;
-  right: 1em;
-  bottom: 1em;
-  border: 1px solid #888;
-  padding: 1em;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
 }
 
 .drop-zone {

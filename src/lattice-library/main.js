@@ -1,4 +1,4 @@
-import {SVG} from '@svgdotjs/svg.js';
+import '@svgdotjs/svg.draggable.js'
 import {subset} from './utility.js';
 import {log} from './logging.js';
 import {Action} from './action.js';
@@ -33,7 +33,7 @@ let width = 800
 let height = 900
 
 //Listener for Deselection
-let draw = SVG()
+let draw;
 
 //Variables for Node Selection
 let selection = new Set()
@@ -43,8 +43,6 @@ let selectionData = []
 
 //Dragging Boundaries
 let bounds = {}
-let box;
-
 let updateSelection = () => {};
 let updateSuperConcept = () => {};
 let updateSubConcept = () => {};
@@ -83,7 +81,7 @@ Set.prototype.clearSession = function () {
 }
 
 function init(container, wrapper) {
-    box = container
+    draw = container;
     wrapper.addEventListener("click", function (event) {
         //Checks if Click Landed on SVG Draw Object or on Background Box
         let elementFromPoint = document.elementFromPoint(event.clientX, event.clientY);
@@ -98,7 +96,7 @@ function init(container, wrapper) {
     });
 
     let {clientWidth, clientHeight} = wrapper;
-    draw.addTo(container).size(clientWidth, clientHeight).viewbox(`-50 0 ${clientWidth + 50} ${clientHeight + 50}`)
+    draw.size(clientWidth, clientHeight).viewbox(`-50 0 ${clientWidth + 50} ${clientHeight + 50}`)
         .panZoom({
             panning: true,
             wheelZoom: true,
@@ -130,7 +128,7 @@ function collectEdges(node) {
     return localEdges
 }
 
-export function load_file(setFile){
+export function load_file(setFile) {
     let input = document.createElement('input');
     input.type = 'file';
 
@@ -138,13 +136,12 @@ export function load_file(setFile){
 
         let file = e.target.files[0];
         let reader = new FileReader();
-        reader.readAsText(file,'UTF-8')
+        reader.readAsText(file, 'UTF-8')
         reader.onload = readerEvent => {
-            try{
+            try {
                 setFile(JSON.parse(readerEvent.target.result))
-            }
-            catch (e) {
-                alert("Failure loading Context File:\n"+e)
+            } catch (e) {
+                alert("Failure loading Context File:\n" + e)
             }
         }
 
@@ -185,19 +182,19 @@ export function draw_lattice(file, container, wrapper) {
     }
     //Draw Nodes and Labels
     for (let j = 0; j < nodes.length; j++) {
-
+        let group = draw.group();
         let node = nodeFromLattice(j);
-        labels_upper[j] = draw.text(String(toplabels[j]))
+        labels_upper[j] = group.text(String(toplabels[j]))
             .attr('name', (style.getPropertyValue('--label-upper-indicator') + String(j)))
             .move(positions[j][0] * (width / (2.2 * xmax)) + width / 2 + 20 - 80,
-                -(positions[j][1] * (height / (1.2 * ymax))) - 60 - buffer + height )
+                -(positions[j][1] * (height / (1.2 * ymax))) - 60 - buffer + height)
             .font({fill: style.getPropertyValue('--intent-color'), size: 30, family: 'Arial'})
             .click(function () {
                 handle_downwards(this, node)
                 log(Action.SelectUpperLabel, node)
             })
 
-        labels_lower[j] = draw.text(String(botlabels[j]))
+        labels_lower[j] = group.text(String(botlabels[j]))
             .attr('name', (style.getPropertyValue('--label-lower-indicator') + String(j)))
             .move(positions[j][0] * (width / (2.2 * xmax)) + width / 2 + 20 - 40,
                 -(positions[j][1] * (height / (1.2 * ymax))) + 10 - buffer + height + 30)
@@ -207,12 +204,12 @@ export function draw_lattice(file, container, wrapper) {
                 log(Action.SelectLowerLabel, node)
             })
 
-        valuations_objects[j] = draw.text(String(valuations[j]))
+        valuations_objects[j] = group.text(String(valuations[j]))
             .move(positions[j][0] * (width / (2.2 * xmax)) + width / 2 + 30,
                 -(positions[j][1] * (height / (1.2 * ymax))) - 20 - buffer + height)
             .font({fill: style.getPropertyValue('--extent-color'), size: 30, family: 'Arial'})
 
-        nodes_upper[j] = draw.path("M 0 0 L 25 0 A 1 1 0 0 0 -25 0 Z")
+        nodes_upper[j] = group.path("M 0 0 L 25 0 A 1 1 0 0 0 -25 0 Z")
             .attr('name', j)
             .attr('drag', 0)
             .move(positions[j][0] * (width / (2.2 * xmax)) + width / 2 - 25
@@ -222,31 +219,16 @@ export function draw_lattice(file, container, wrapper) {
                 handle_downwards(this, node)
                 log(Action.SelectUpperNode, node)
             })
-            .mousedown(function (e) {
+            .draggable()
+            .on('dragstart.namespace', function (e) {
                 startDrag(e, this, node)
             })
-            .mousemove(function (e) {
+            .on('dragmove.namespace', function (e) {
+                e.preventDefault();
                 Drag(e, this)
             })
-            .mouseup(function (e) {
+            .on('dragend.namespace', function (e) {
                 endDrag(e, this, node)
-            })
-            .mouseover(function (e) {
-                log(Action.HoverUpperNode, node)
-                updateHoverSubConcept(nodesFromConcept(collectSubConcepts(this)))
-                updateHoverState(HoverState.Upper)
-                updateHoverNode({
-                    node: node,
-                    coordinates: {
-                        x: `${e.clientX + popupXOffset}px`,
-                        y: `${e.clientY - popupYOffset}px`
-                    }
-                })
-            })
-            .mouseout(function (e) {
-                updateHoverNode(null)
-                updateHoverSubConcept(null)
-                updateHoverState('')
             })
 
         if (labels_upper[j].text() === "") {
@@ -255,7 +237,7 @@ export function draw_lattice(file, container, wrapper) {
             nodes_upper[j].fill(style.getPropertyValue('--intent-faint'))
         }
 
-        nodes_lower[j] = draw.path("M 0 0 L -25 0 A 1 1 0 0 0 25 0 Z")
+        nodes_lower[j] = group.path("M 0 0 L -25 0 A 1 1 0 0 0 25 0 Z")
             .attr('name', j)
             .attr('drag', 0)
             .move(positions[j][0] * (width / (2.2 * xmax)) + width / 2 - 25
@@ -265,18 +247,48 @@ export function draw_lattice(file, container, wrapper) {
                 handle_upwards(this, node)
                 log(Action.SelectLowerNode, node)
             })
-            .mousedown(function (e) {
+            .draggable()
+            .on('dragstart.namespace', function (e) {
                 startDrag(e, this, node)
             })
-            .mousemove(function (e) {
+            .on('dragmove.namespace', function (e) {
+                e.preventDefault();
                 Drag(e, this)
             })
-            .mouseup(function (e) {
+            .on('dragend.namespace', function (e) {
                 endDrag(e, this, node)
             })
+
+        if (labels_lower[j].text() === "") {
+            nodes_lower[j].fill(style.getPropertyValue('--clear'))
+        } else {
+            nodes_lower[j].fill(style.getPropertyValue('--extent-faint'))
+        }
+
+        // label hover functionality
+        labels_upper[j]
+            .mouseover(function (e) {
+                log(Action.HoverUpperNode, node)
+                updateHoverSubConcept(nodesFromConcept(collectSubConcepts(nodes_upper[j])))
+                updateHoverState(HoverState.Upper)
+                updateHoverNode({
+                    node: node,
+                    coordinates: {
+                        x: `${e.clientX + popupXOffset}px`,
+                        y: `${e.clientY - popupYOffset}px`
+                    }
+                })
+            })
+            .mouseout(function () {
+                updateHoverNode(null)
+                updateHoverSubConcept(null)
+                updateHoverState('')
+            })
+
+        labels_lower[j]
             .mouseover(function (e) {
                 log(Action.HoverLowerNode, node)
-                updateHoverSuperConcept(nodesFromConcept(collectSuperConcepts(this)))
+                updateHoverSuperConcept(nodesFromConcept(collectSuperConcepts(nodes_lower[j])))
                 updateHoverState(HoverState.Lower)
                 updateHoverNode({
                     node: node,
@@ -286,18 +298,11 @@ export function draw_lattice(file, container, wrapper) {
                     }
                 })
             })
-            .mouseout(function (e) {
+            .mouseout(function () {
                 updateHoverNode(null)
                 updateHoverSuperConcept(null)
                 updateHoverState('')
             })
-
-        if (labels_lower[j].text() === "") {
-            nodes_lower[j].fill(style.getPropertyValue('--clear'))
-        } else {
-            nodes_lower[j].fill(style.getPropertyValue('--extent-faint'))
-        }
-
     }
 }
 
@@ -376,26 +381,20 @@ function startDrag(e, node, nodeData) {
     }
 
     //Set Drag Flag
+    node.css('z-index', 2)
     nodes_upper[node.attr('name')].attr('drag', 1)
     nodes_lower[node.attr('name')].attr('drag', 1)
-
 }
 
 function Drag(e, node) {
-
     if (node.attr('drag') === 1) {
-
-        let p = draw.point(e.clientX, e.clientY)
+        let p = draw.point(e.detail.event.clientX, e.detail.event.clientY)
         let cursorX = p.x
         let cursorY = p.y
 
         selection.forEach(element => {
-
-            if (!(element.attr('name') === node.attr('name'))) {
-                redrawNode(element, node, cursorX, cursorY, bounds, selected_edges)
-            }
+            redrawNode(element, node, cursorX, cursorY, bounds, selected_edges)
         })
-        redrawNode(node, node, cursorX, cursorY, bounds, selected_edges)
     }
 }
 
@@ -407,6 +406,7 @@ function endDrag(e, node, nodeData) {
     nodes_lower[name].attr('drag', 0)
     selected_edges.clear()
     bounds = {}
+    node.css('z-index', 1)
 }
 
 function redrawNode(current_node, dragged_node, cursorX, cursorY, bounds, selected_edges) {
@@ -797,8 +797,8 @@ function delete_all() {
     labels_lower = []
     valuations = []
     valuations_objects = []
-    draw.each(function(i, children) {
+    draw.each(function (i, children) {
         this.remove()
-      }, true)
+    }, true)
 
 }

@@ -5,8 +5,9 @@ const Selection = ({selection}) => {
     return (<>
         <hr style="width: 100%"></hr>
         <span>Selected Nodes:&nbsp
-            <For each={selection()}>{(item, index) => <>{index() < 1 ? '' : ', '}{item.node}</>}
-            </For>
+            <For each={selection()}>{(item, index) =>
+                <>{index() < 1 ? '' : ', '}{item.node}</>
+            }</For>
         </span>
         <Switch>
             <Match when={isAnEntityWithProperty(selection())}>

@@ -5,6 +5,7 @@ html, body {
 body {
   margin: 0;
   width: 100%;
+  user-select: none;
 }
 
 :root {
@@ -111,9 +112,25 @@ button:focus-visible {
   background-color: #242424;
 }
 
-.legend {
+svg text {
+  cursor: default;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  z-index: 0;
+}
+
+svg line {
+  z-index: -1;
+}
+
+svg path {
+  z-index: 1;
+}
+
+.position {
   position: absolute;
-  bottom: 1.5em;
-  right: 1.5em;
-  max-width: 30%;
+  bottom: 0;
+  color: rgba(255,255,255,0.3);
 }

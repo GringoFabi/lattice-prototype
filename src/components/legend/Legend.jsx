@@ -1,5 +1,5 @@
 import StandardNode from './StandardNode.jsx';
-
+import './legend.css';
 
 const Legend = () => {
 

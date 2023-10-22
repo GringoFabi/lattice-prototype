@@ -3,7 +3,7 @@ import {createMemo, createSignal, Show} from 'solid-js';
 import Dropzone from './Dropzone.jsx';
 import Footer from './Footer.jsx';
 import Lattice from './Lattice.jsx';
-import Legend from './Legend.jsx';
+import Legend from './legend/Legend.jsx';
 import {Environment} from '../env/environment.js';
 import {bindSelectionUpdates} from '../lattice-library/main.js';
 import Navigation from './navigation/Navigation.jsx';

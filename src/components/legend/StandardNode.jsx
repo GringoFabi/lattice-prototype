@@ -9,33 +9,31 @@ const StandardNode = () => {
     const svgContainer = createMemo(() => SVG().id("svg-container"), []);
     let svgWrapper;
     onMount(() => {
-        const draw = SVG().addTo(svgContainer()).size(200, 200).viewbox('0 -10 200 200')
-
-        draw.text(String('Property'))
+        svgContainer().text(String('Property'))
             .attr('name', (style.getPropertyValue('--label-upper-indicator') + 'Property'))
-            .move(0, -11)
+            .move(0, 0)
             .font({fill: style.getPropertyValue('--intent-faint'), size: textSize, family: 'Arial'})
 
-        draw.text(String('Article'))
+        svgContainer().text(String('Article'))
             .attr('name', (style.getPropertyValue('--label-lower-indicator') + 'Article'))
-            .move(10, 50)
+            .move(10, 60)
             .font({fill: style.getPropertyValue('--extent-color'), size: textSize, family: 'Arial'})
 
-        draw.text(String('00'))
-            .move(55, 20)
+        svgContainer().text(String('00'))
+            .move(55, 30)
             .font({fill: style.getPropertyValue('--extent-color'), size: textSize, family: 'Arial'})
 
-        draw.path('M 0 0 L 20 0 A 1 1 0 0 0 -20 0 Z')
+        svgContainer().path('M 0 0 L 20 0 A 1 1 0 0 0 -20 0 Z')
             .attr('name', 'Property')
             .attr('drag', 0)
-            .move(10, 10)
+            .move(10, 20)
             .stroke({color: style.getPropertyValue('--default-black'), width: 3, linecap: 'round', linejoin: 'round'})
             .fill(style.getPropertyValue('--intent-faint'))
 
-        draw.path('M 0 0 L -20 0 A 1 1 0 0 0 20 0 Z')
+        svgContainer().path('M 0 0 L -20 0 A 1 1 0 0 0 20 0 Z')
             .attr('name', 'Article')
             .attr('drag', 0)
-            .move(10, 30)
+            .move(10, 40)
             .stroke({color: style.getPropertyValue('--default-black'), width: 3, linecap: 'round', linejoin: 'round'})
             .fill(style.getPropertyValue('--extent-faint'))
     })

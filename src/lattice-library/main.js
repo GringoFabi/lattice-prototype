@@ -1,4 +1,3 @@
-import {SVG} from '@svgdotjs/svg.js';
 import '@svgdotjs/svg.draggable.js'
 import {subset} from './utility.js';
 import {log} from './logging.js';
@@ -34,7 +33,7 @@ let width = 800
 let height = 900
 
 //Listener for Deselection
-let draw = SVG()
+let draw;
 
 //Variables for Node Selection
 let selection = new Set()
@@ -44,23 +43,13 @@ let selectionData = []
 
 //Dragging Boundaries
 let bounds = {}
-let box;
-
-let updateSelection = () => {
-};
-let updateSuperConcept = () => {
-};
-let updateSubConcept = () => {
-};
-let updateHoverNode = () => {
-};
-let updateHoverSuperConcept = () => {
-};
-let updateHoverSubConcept = () => {
-};
-let updateHoverState = () => {
-};
-
+let updateSelection = () => {};
+let updateSuperConcept = () => {};
+let updateSubConcept = () => {};
+let updateHoverNode = () => {};
+let updateHoverSuperConcept = () => {};
+let updateHoverSubConcept = () => {};
+let updateHoverState = () => {};
 export function bindSelectionUpdates(setSelection, setSuperConcept, setSubConcept, setHoverNode, setHoverSuperConcept, setHoverSubConcept, setHoverState) {
     updateSelection = setSelection
     updateSuperConcept = setSuperConcept
@@ -92,7 +81,7 @@ Set.prototype.clearSession = function () {
 }
 
 function init(container, wrapper) {
-    box = container
+    draw = container;
     wrapper.addEventListener("click", function (event) {
         //Checks if Click Landed on SVG Draw Object or on Background Box
         let elementFromPoint = document.elementFromPoint(event.clientX, event.clientY);
@@ -107,7 +96,7 @@ function init(container, wrapper) {
     });
 
     let {clientWidth, clientHeight} = wrapper;
-    draw.addTo(container).size(clientWidth, clientHeight).viewbox(`-50 0 ${clientWidth + 50} ${clientHeight + 50}`)
+    draw.size(clientWidth, clientHeight).viewbox(`-50 0 ${clientWidth + 50} ${clientHeight + 50}`)
         .panZoom({
             panning: true,
             wheelZoom: true,
@@ -193,9 +182,9 @@ export function draw_lattice(file, container, wrapper) {
     }
     //Draw Nodes and Labels
     for (let j = 0; j < nodes.length; j++) {
-
+        let group = draw.group();
         let node = nodeFromLattice(j);
-        labels_upper[j] = draw.text(String(toplabels[j]))
+        labels_upper[j] = group.text(String(toplabels[j]))
             .attr('name', (style.getPropertyValue('--label-upper-indicator') + String(j)))
             .move(positions[j][0] * (width / (2.2 * xmax)) + width / 2 + 20 - 80,
                 -(positions[j][1] * (height / (1.2 * ymax))) - 60 - buffer + height)
@@ -205,7 +194,7 @@ export function draw_lattice(file, container, wrapper) {
                 log(Action.SelectUpperLabel, node)
             })
 
-        labels_lower[j] = draw.text(String(botlabels[j]))
+        labels_lower[j] = group.text(String(botlabels[j]))
             .attr('name', (style.getPropertyValue('--label-lower-indicator') + String(j)))
             .move(positions[j][0] * (width / (2.2 * xmax)) + width / 2 + 20 - 40,
                 -(positions[j][1] * (height / (1.2 * ymax))) + 10 - buffer + height + 30)
@@ -215,12 +204,12 @@ export function draw_lattice(file, container, wrapper) {
                 log(Action.SelectLowerLabel, node)
             })
 
-        valuations_objects[j] = draw.text(String(valuations[j]))
+        valuations_objects[j] = group.text(String(valuations[j]))
             .move(positions[j][0] * (width / (2.2 * xmax)) + width / 2 + 30,
                 -(positions[j][1] * (height / (1.2 * ymax))) - 20 - buffer + height)
             .font({fill: style.getPropertyValue('--extent-color'), size: 30, family: 'Arial'})
 
-        nodes_upper[j] = draw.path("M 0 0 L 25 0 A 1 1 0 0 0 -25 0 Z")
+        nodes_upper[j] = group.path("M 0 0 L 25 0 A 1 1 0 0 0 -25 0 Z")
             .attr('name', j)
             .attr('drag', 0)
             .move(positions[j][0] * (width / (2.2 * xmax)) + width / 2 - 25
@@ -229,30 +218,18 @@ export function draw_lattice(file, container, wrapper) {
             .click(function () {
                 handle_downwards(this, node)
                 log(Action.SelectUpperNode, node)
-            }).draggable()
-
-        nodes_upper[j]
+            })
+            .draggable()
             .on('dragstart.namespace', function (e) {
-                console.log('start drag')
                 startDrag(e, this, node)
             })
             .on('dragmove.namespace', function (e) {
-                console.log('drag')
+                e.preventDefault();
                 Drag(e, this)
             })
             .on('dragend.namespace', function (e) {
-                console.log('end drag')
                 endDrag(e, this, node)
             })
-        // .mousedown(function (e) {
-        //
-        // })
-        // .mousemove(function (e) {
-        //     Drag(e, this)
-        // })
-        // .mouseup(function (e) {
-        //     endDrag(e, this, node)
-        // })
 
         if (labels_upper[j].text() === "") {
             nodes_upper[j].fill(style.getPropertyValue('--clear'))
@@ -260,7 +237,7 @@ export function draw_lattice(file, container, wrapper) {
             nodes_upper[j].fill(style.getPropertyValue('--intent-faint'))
         }
 
-        nodes_lower[j] = draw.path("M 0 0 L -25 0 A 1 1 0 0 0 25 0 Z")
+        nodes_lower[j] = group.path("M 0 0 L -25 0 A 1 1 0 0 0 25 0 Z")
             .attr('name', j)
             .attr('drag', 0)
             .move(positions[j][0] * (width / (2.2 * xmax)) + width / 2 - 25
@@ -269,28 +246,18 @@ export function draw_lattice(file, container, wrapper) {
             .click(function () {
                 handle_upwards(this, node)
                 log(Action.SelectLowerNode, node)
-            }).draggable()
-
-        nodes_lower[j]
+            })
+            .draggable()
             .on('dragstart.namespace', function (e) {
                 startDrag(e, this, node)
             })
             .on('dragmove.namespace', function (e) {
+                e.preventDefault();
                 Drag(e, this)
             })
             .on('dragend.namespace', function (e) {
                 endDrag(e, this, node)
             })
-
-        // .mousedown(function (e) {
-        //     startDrag(e, this, node)
-        // })
-        // .mousemove(function (e) {
-        //     Drag(e, this)
-        // })
-        // .mouseup(function (e) {
-        //     endDrag(e, this, node)
-        // })
 
         if (labels_lower[j].text() === "") {
             nodes_lower[j].fill(style.getPropertyValue('--clear'))
@@ -421,8 +388,7 @@ function startDrag(e, node, nodeData) {
 
 function Drag(e, node) {
     if (node.attr('drag') === 1) {
-
-        let p = draw.point(e.clientX, e.clientY)
+        let p = draw.point(e.detail.event.clientX, e.detail.event.clientY)
         let cursorX = p.x
         let cursorY = p.y
 

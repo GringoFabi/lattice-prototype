@@ -175,7 +175,7 @@ export function draw_lattice(file, container, wrapper) {
 
         edge_objects[i] = draw.line(positions[source][0] * (width / (2.2 * xmax)) + width / 2, -(positions[source][1] * (height / (1.2 * ymax))) + height - buffer,
             positions[target][0] * (width / (2.2 * xmax)) + width / 2, -(positions[target][1] * (height / (1.2 * ymax))) + height - buffer)
-            .stroke({width: 5, color: style.getPropertyValue('--default-black')})
+            .stroke({width: 4, color: style.getPropertyValue('--default-black')})
             .attr('source', source)
             .attr('target', target)
 

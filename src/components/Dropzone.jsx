@@ -6,13 +6,11 @@ const Dropzone = ({update}) => {
     return (
         <div className="drop-zone"
              onDrop={(event) => dropHandler(event, update)}
-             onDragOver={(event) => dragOver(event)}
-        >
+             onDragOver={(event) => dragOver(event)}>
             <p className="upload-prompt">Drag and drop a json file or click&nbsp
                 <span className="upload" onClick={(event) => startUpload(event, update)}>here</span>
-                , to start the
-                upload.</p>
-            <img src={graph} className="back-ground" alt="background"/>
+                , to start the upload.
+            </p>
         </div>
     )
 }

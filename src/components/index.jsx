@@ -12,7 +12,7 @@ const handleMouseMove = (event) => {
     setPos({ x: clientX, y: clientY });
 }
 
-render(() => <div onMouseMove={handleMouseMove}>
+render(() => <div onMouseMove={(event) => handleMouseMove(event)}>
     <App/>
     <small className="position">[{pos().x}, {pos().y}]</small>
 </div>, root)

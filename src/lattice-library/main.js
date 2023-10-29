@@ -96,7 +96,7 @@ function init(container, wrapper) {
     });
 
     let {clientWidth, clientHeight} = wrapper;
-    draw.size(clientWidth, clientHeight).viewbox(`-50 0 ${clientWidth + 50} ${clientHeight + 50}`)
+    draw.size(clientWidth, clientHeight).viewbox(`-100 0 ${clientWidth + 50} ${clientHeight + 50}`)
         .panZoom({
             panning: true,
             wheelZoom: true,
@@ -188,7 +188,7 @@ export function draw_lattice(file, container, wrapper) {
             .attr('name', (style.getPropertyValue('--label-upper-indicator') + String(j)))
             .move(positions[j][0] * (width / (2.2 * xmax)) + width / 2 + 20 - 80,
                 -(positions[j][1] * (height / (1.2 * ymax))) - 60 - buffer + height)
-            .font({fill: style.getPropertyValue('--intent-color'), size: 30, family: 'Arial'})
+            .font({fill: style.getPropertyValue('--intent-color'), size: 20, family: 'Arial'})
             .click(function () {
                 handle_downwards(this, node)
                 log(Action.SelectUpperLabel, node)
@@ -198,7 +198,7 @@ export function draw_lattice(file, container, wrapper) {
             .attr('name', (style.getPropertyValue('--label-lower-indicator') + String(j)))
             .move(positions[j][0] * (width / (2.2 * xmax)) + width / 2 + 20 - 40,
                 -(positions[j][1] * (height / (1.2 * ymax))) + 10 - buffer + height + 30)
-            .font({fill: style.getPropertyValue('--extent-color'), size: 30, family: 'Arial'})
+            .font({fill: style.getPropertyValue('--extent-color'), size: 20, family: 'Arial'})
             .click(function () {
                 handle_upwards(this, node)
                 log(Action.SelectLowerLabel, node)
@@ -207,7 +207,7 @@ export function draw_lattice(file, container, wrapper) {
         valuations_objects[j] = group.text(String(valuations[j]))
             .move(positions[j][0] * (width / (2.2 * xmax)) + width / 2 + 30,
                 -(positions[j][1] * (height / (1.2 * ymax))) - 20 - buffer + height)
-            .font({fill: style.getPropertyValue('--extent-color'), size: 30, family: 'Arial'})
+            .font({fill: style.getPropertyValue('--extent-color'), size: 20, family: 'Arial'})
 
         nodes_upper[j] = group.path("M 0 0 L 25 0 A 1 1 0 0 0 -25 0 Z")
             .attr('name', j)

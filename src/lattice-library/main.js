@@ -186,7 +186,7 @@ export function draw_lattice(file, container, wrapper) {
         let node = nodeFromLattice(j);
         labels_upper[j] = group.text(String(toplabels[j]))
             .attr('name', (style.getPropertyValue('--label-upper-indicator') + String(j)))
-            .move(positions[j][0] * (width / (2.2 * xmax)) + width / 2 + 20 - 80,
+            .move(positions[j][0] * (width / (2.2 * xmax)) + width / 2 + 20,
                 -(positions[j][1] * (height / (1.2 * ymax))) - 60 - buffer + height)
             .font({fill: style.getPropertyValue('--intent-color'), size: 20, family: 'Arial'})
             .click(function () {
@@ -196,7 +196,7 @@ export function draw_lattice(file, container, wrapper) {
 
         labels_lower[j] = group.text(String(botlabels[j]))
             .attr('name', (style.getPropertyValue('--label-lower-indicator') + String(j)))
-            .move(positions[j][0] * (width / (2.2 * xmax)) + width / 2 + 20 - 40,
+            .move(positions[j][0] * (width / (2.2 * xmax)) + width / 2 + 20,
                 -(positions[j][1] * (height / (1.2 * ymax))) + 10 - buffer + height + 30)
             .font({fill: style.getPropertyValue('--extent-color'), size: 20, family: 'Arial'})
             .click(function () {

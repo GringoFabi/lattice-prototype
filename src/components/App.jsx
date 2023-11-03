@@ -26,7 +26,7 @@ const App = () => {
     const conceptsAreSet = createMemo(() => superConcept() !== null && subConcept() !== null)
     return (
         <>
-            <Show when={hideOverlay()}>
+            <Show when={!hideOverlay()}>
                 <Overlay state={hideOverlay} update={setHideOverlay}/>
             </Show>
             <div className="main">

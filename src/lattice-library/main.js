@@ -96,7 +96,7 @@ function init(container, wrapper) {
     });
 
     let {clientWidth, clientHeight} = wrapper;
-    draw.size(clientWidth, clientHeight).viewbox(`-100 0 ${clientWidth + 50} ${clientHeight + 50}`)
+    draw.size(clientWidth, clientHeight).viewbox(`-${xmax*50} 10 ${clientWidth + 50} ${clientHeight + 50}`)
         .panZoom({
             panning: true,
             wheelZoom: true,
@@ -151,8 +151,8 @@ export function load_file(setFile) {
 }
 
 export function draw_lattice(file, container, wrapper) {
-    init(container, wrapper)
     lattice = readJSON(file)
+    init(container, wrapper)
     delete_all()
 
     nodes = lattice[0]
@@ -167,15 +167,13 @@ export function draw_lattice(file, container, wrapper) {
     ymax = lattice[7]
 
     //Draw Edges
-    let buffer = 50
-
     for (let i = 0; i < edges.length; i++) {
         let source = edges[i][0]
         let target = edges[i][1]
 
-        edge_objects[i] = draw.line(positions[source][0] * (width / (2.2 * xmax)) + width / 2, -(positions[source][1] * (height / (1.2 * ymax))) + height - buffer,
-            positions[target][0] * (width / (2.2 * xmax)) + width / 2, -(positions[target][1] * (height / (1.2 * ymax))) + height - buffer)
-            .stroke({width: 4, color: style.getPropertyValue('--default-black')})
+        edge_objects[i] = draw.line(positions[source][0] * (width / (2.2 * xmax)) + width / 2, -(positions[source][1] * (height / (1.2 * ymax))) + height,
+            positions[target][0] * (width / (2.2 * xmax)) + width / 2, -(positions[target][1] * (height / (1.2 * ymax))) + height)
+            .stroke({width: 3, color: style.getPropertyValue('--default-black')})
             .attr('source', source)
             .attr('target', target)
 
@@ -186,8 +184,8 @@ export function draw_lattice(file, container, wrapper) {
         let node = nodeFromLattice(j);
         labels_upper[j] = group.text(String(toplabels[j]))
             .attr('name', (style.getPropertyValue('--label-upper-indicator') + String(j)))
-            .move(positions[j][0] * (width / (2.2 * xmax)) + width / 2 + 20,
-                -(positions[j][1] * (height / (1.2 * ymax))) - 60 - buffer + height)
+            .move(positions[j][0] * (width / (2.2 * xmax)) + width / 2 - 30,
+                -(positions[j][1] * (height / (1.2 * ymax))) - 50 + height)
             .font({fill: style.getPropertyValue('--intent-color'), size: 20, family: 'Arial'})
             .click(function () {
                 handle_downwards(this, node)
@@ -196,8 +194,8 @@ export function draw_lattice(file, container, wrapper) {
 
         labels_lower[j] = group.text(String(botlabels[j]))
             .attr('name', (style.getPropertyValue('--label-lower-indicator') + String(j)))
-            .move(positions[j][0] * (width / (2.2 * xmax)) + width / 2 + 20,
-                -(positions[j][1] * (height / (1.2 * ymax))) + 10 - buffer + height + 30)
+            .move(positions[j][0] * (width / (2.2 * xmax)) + width / 2 - 15,
+                -(positions[j][1] * (height / (1.2 * ymax))) + 30 + height)
             .font({fill: style.getPropertyValue('--extent-color'), size: 20, family: 'Arial'})
             .click(function () {
                 handle_upwards(this, node)
@@ -206,15 +204,15 @@ export function draw_lattice(file, container, wrapper) {
 
         valuations_objects[j] = group.text(String(valuations[j]))
             .move(positions[j][0] * (width / (2.2 * xmax)) + width / 2 + 30,
-                -(positions[j][1] * (height / (1.2 * ymax))) - 20 - buffer + height)
-            .font({fill: style.getPropertyValue('--extent-color'), size: 20, family: 'Arial'})
+                -(positions[j][1] * (height / (1.2 * ymax))) + height - 10)
+            .font({fill: style.getPropertyValue('--clear'), size: 20, family: 'Arial'})
 
         nodes_upper[j] = group.path("M 0 0 L 25 0 A 1 1 0 0 0 -25 0 Z")
             .attr('name', j)
             .attr('drag', 0)
             .move(positions[j][0] * (width / (2.2 * xmax)) + width / 2 - 25
-                , -(positions[j][1] * (height / (1.2 * ymax))) - 25 - buffer + height)
-            .stroke({color: style.getPropertyValue('--default-black'), width: 4, linecap: 'round', linejoin: 'round'})
+                , -(positions[j][1] * (height / (1.2 * ymax))) - 25 + height)
+            .stroke({color: style.getPropertyValue('--default-black'), width: 3, linecap: 'round', linejoin: 'round'})
             .click(function () {
                 handle_downwards(this, node)
                 log(Action.SelectUpperNode, node)
@@ -241,8 +239,8 @@ export function draw_lattice(file, container, wrapper) {
             .attr('name', j)
             .attr('drag', 0)
             .move(positions[j][0] * (width / (2.2 * xmax)) + width / 2 - 25
-                , -(positions[j][1] * (height / (1.2 * ymax))) - buffer + height)
-            .stroke({color: style.getPropertyValue('--default-black'), width: 4, linecap: 'round', linejoin: 'round'})
+                , -(positions[j][1] * (height / (1.2 * ymax))) + height)
+            .stroke({color: style.getPropertyValue('--default-black'), width: 3, linecap: 'round', linejoin: 'round'})
             .click(function () {
                 handle_upwards(this, node)
                 log(Action.SelectLowerNode, node)
@@ -280,9 +278,11 @@ export function draw_lattice(file, container, wrapper) {
                 })
             })
             .mouseout(function () {
-                updateHoverNode(null)
-                updateHoverSubConcept(null)
-                updateHoverState('')
+                setTimeout(() => {
+                    updateHoverNode(null)
+                    updateHoverSubConcept(null)
+                    updateHoverState('')
+                }, 300)
             })
 
         labels_lower[j]
@@ -437,9 +437,9 @@ function redrawNode(current_node, dragged_node, cursorX, cursorY, bounds, select
     nodes_upper[name].move(posX, posY - 25)
     nodes_lower[name].move(posX, posY)
 
-    labels_upper[name].move(posX + 43, posY - 50)
-    labels_lower[name].move(posX + 43, posY + 20)
-    valuations_objects[name].move(posX + 53, posY - 15)
+    labels_upper[name].move(posX, posY - 55)
+    labels_lower[name].move(posX, posY + 30)
+    valuations_objects[name].move(posX + 55, posY - 10)
 
     //Readraw Affected Edges
     selected_edges.forEach(element => {

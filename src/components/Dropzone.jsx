@@ -1,4 +1,3 @@
-import graph from '../assets/graph.svg';
 import {load_file} from '../lattice-library/main.js';
 
 

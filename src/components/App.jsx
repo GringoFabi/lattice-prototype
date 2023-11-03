@@ -8,6 +8,7 @@ import {Environment} from '../env/environment.js';
 import {bindSelectionUpdates} from '../lattice-library/main.js';
 import Navigation from './navigation/Navigation.jsx';
 import {Popup} from './hover/Popup.jsx';
+import Overlay from "./Overlay.jsx";
 
 const App = () => {
     const [file, setFile] = createSignal(null);
@@ -20,13 +21,18 @@ const App = () => {
     const [hoverState, setHoverState] = createSignal("");
     bindSelectionUpdates(setSelection, setSuperConcept, setSubConcept, setHoverNode, setHoverSuperConcept, setHoverSubConcept, setHoverState);
 
+    const [hideOverlay, setHideOverlay] = createSignal(true);
+
     const conceptsAreSet = createMemo(() => superConcept() !== null && subConcept() !== null)
     return (
         <>
+            <Show when={hideOverlay()}>
+                <Overlay state={hideOverlay} update={setHideOverlay}/>
+            </Show>
             <div className="main">
                 <Show when={file()} fallback={<Dropzone update={setFile}/>}>
                     <button className="reset-button"
-                        onClick={() => setFile(null)}>Reset</button>
+                            onClick={() => setFile(null)}>Reset</button>
                     <Lattice file={file()}/>
                 </Show>
             </div>

@@ -1,0 +1,52 @@
+
+.overlay {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 9;
+    background: rgba(200, 200, 200, 0.1);
+    backdrop-filter: blur(2px);
+    -webkit-backdrop-filter: blur(10px);
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.close {
+    cursor: pointer;
+    position: absolute;
+    right: .5em;
+    top: .5em;
+    font-size: 4em;
+    z-index: 10;
+}
+
+.arrow {
+    position: absolute;
+    z-index: 10;
+    font-size: 200px;
+}
+
+.center {
+    left: 50%;
+    right: 50%;
+    top: 40%;
+    bottom: 60%;
+}
+
+.empty-card {
+    position: absolute;
+    bottom: 1.5em;
+    right: 1.5em;
+    max-width: 25em;
+    min-width: 25em;
+    border-radius: 16px;
+    border: 2px solid white;
+    z-index: 10;
+    padding: 1em;
+    min-height: 24em;
+}
+

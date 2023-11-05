@@ -8,11 +8,13 @@ const root = document.getElementById('root')
 const [pos, setPos] = createSignal({x: 0, y: 0});
 
 const handleMouseMove = (event) => {
-    const { clientX, clientY } = event;
-    setPos({ x: clientX, y: clientY });
+    const {clientX, clientY} = event;
+    setPos({x: clientX, y: clientY});
 }
 
-render(() => <div onMouseMove={(event) => handleMouseMove(event)}>
-    <App/>
-    <small className="position">[{pos().x}, {pos().y}]</small>
-</div>, root)
+render(() => (
+    <div onMouseMove={(event) => handleMouseMove(event)}>
+        <App/>
+        <small className="position">[{pos().x}, {pos().y}]</small>
+    </div>
+), root)

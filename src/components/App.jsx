@@ -8,7 +8,15 @@ import {Environment} from '../env/environment.js';
 import {bindSelectionUpdates} from '../lattice-library/main.js';
 import Navigation from './navigation/Navigation.jsx';
 import {Popup} from './hover/Popup.jsx';
-import Overlay from "./Overlay.jsx";
+import Tools from './tools/Tools.jsx';
+
+const initialColors = {
+    'top-half': '#8888ff',
+    'bottom-half': '#ddbbaa',
+    'top-label': '#4444bb',
+    'bottom-label': '#ddbb00',
+    'value-label': '#ffffff',
+};
 
 const App = () => {
     const [file, setFile] = createSignal(null);
@@ -18,28 +26,26 @@ const App = () => {
     const [hoverNode, setHoverNode] = createSignal(null);
     const [hoverSuperConcept, setHoverSuperConcept] = createSignal(null);
     const [hoverSubConcept, setHoverSubConcept] = createSignal(null);
-    const [hoverState, setHoverState] = createSignal("");
+    const [hoverState, setHoverState] = createSignal('');
     bindSelectionUpdates(setSelection, setSuperConcept, setSubConcept, setHoverNode, setHoverSuperConcept, setHoverSubConcept, setHoverState);
-
-    const [hideOverlay, setHideOverlay] = createSignal(true);
-
     const conceptsAreSet = createMemo(() => superConcept() !== null && subConcept() !== null)
+    const [colors, setColors] = createSignal(initialColors)
+
     return (
         <>
-            <Show when={!hideOverlay()}>
-                <Overlay state={hideOverlay} update={setHideOverlay}/>
-            </Show>
+            <Tools colors={colors} setColors={setColors}/>
             <div className="main">
                 <Show when={file()} fallback={<Dropzone update={setFile}/>}>
                     <button className="reset-button"
-                            onClick={() => setFile(null)}>Reset</button>
+                            onClick={() => setFile(null)}>Reset
+                    </button>
                     <Lattice file={file()}/>
                 </Show>
             </div>
             <Show when={selection().length > 0 && conceptsAreSet()}>
                 <Navigation selection={selection} superConcept={superConcept} subConcept={subConcept}/>
             </Show>
-            <Legend />
+            <Legend colors={colors}/>
             <Popup node={hoverNode} superConcept={hoverSuperConcept} subConcept={hoverSubConcept} state={hoverState}/>
             <Show when={import.meta.env.MODE === Environment.Dev}>
                 <Footer/>

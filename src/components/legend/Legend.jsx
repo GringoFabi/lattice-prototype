@@ -2,12 +2,12 @@ import StandardNode from './StandardNode.jsx';
 import './legend.css';
 import {createSignal, Show} from 'solid-js';
 
-const Legend = () => {
+const Legend = ({colors}) => {
     const [hide, setHide] = createSignal(false);
 
     return (
         <Show when={!hide()} fallback={
-            <span className="material-symbols-outlined show" onClick={() => setHide(!hide())}>expand_less</span>
+            <span className="material-symbols-outlined show" onClick={() => setHide(!hide())}>explore</span>
         }>
             <div className="card legend">
                 <div className="column">
@@ -18,14 +18,14 @@ const Legend = () => {
                     <hr style="width: 100%"></hr>
                     <span style="margin: 0.5em 0.75em">Hover with your cursor on top of a node to display more information</span>
                     <div className="row-middle">
-                        <StandardNode />
+                        <StandardNode colors={colors}/>
                     </div>
                     <div className="row">
-                        <StandardNode />
+                        <StandardNode colors={colors}/>
                         <label style="margin-right: 2em">Choose an article by clicking on it</label>
                     </div>
                     <div className="row">
-                        <StandardNode />
+                        <StandardNode colors={colors}/>
                         <label style="margin-right: 2em">Choose a property by clicking on it</label>
                     </div>
                 </div>

@@ -7,11 +7,11 @@ const Overlay = ({state, update}) => {
         <div className="overlay">
             <h1>Tutorial</h1>
         </div>
-        <span className="arrow center">&#8679;</span>
-
-        <div className="empty-card">
-            <span className="arrow">&#8681;</span>
+        <div className="buttons">
+            <button onClick={() => console.log('next')}>Next</button>
+            <button onClick={() => update(!state())}>Skip</button>
         </div>
+
     </>)
 
 }

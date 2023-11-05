@@ -42,12 +42,12 @@ const StandardNode = ({colors}) => {
 
     createEffect(() => svgContainer().addTo(svgWrapper))
     createRenderEffect(() => {
-        const updatedColors = colors()
-        if (topLabel) topLabel.fill(updatedColors['top-label'])
-        if (bottomLabel) bottomLabel.fill(updatedColors['bottom-label'])
-        if (valueLabel) valueLabel.fill(updatedColors['value-label'])
-        if (topHalf) topHalf.fill(updatedColors['top-half'])
-        if (bottomHalf) bottomHalf.fill(updatedColors['bottom-half'])
+        const updatedColors = colors();
+        if (topLabel) topLabel.fill(updatedColors['top-label']);
+        if (bottomLabel) bottomLabel.fill(updatedColors['bottom-label']);
+        if (valueLabel) valueLabel.fill(updatedColors['value-label']);
+        if (topHalf) topHalf.fill(updatedColors['top-half']);
+        if (bottomHalf) bottomHalf.fill(updatedColors['bottom-half']);
     })
 
     return (

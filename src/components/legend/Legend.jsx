@@ -6,7 +6,7 @@ const Legend = ({colors}) => {
     const [hide, setHide] = createSignal(false);
 
     return (
-        <Show when={!hide()} fallback={
+        <Show when={hide()} fallback={
             <span className="material-symbols-outlined show" onClick={() => setHide(!hide())}>explore</span>
         }>
             <div className="card legend">

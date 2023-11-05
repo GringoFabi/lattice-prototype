@@ -39,7 +39,7 @@ const App = () => {
                     <button className="reset-button"
                             onClick={() => setFile(null)}>Reset
                     </button>
-                    <Lattice file={file()}/>
+                    <Lattice file={file()} colors={colors}/>
                 </Show>
             </div>
             <Show when={selection().length > 0 && conceptsAreSet()}>

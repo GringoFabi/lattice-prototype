@@ -167,8 +167,6 @@ export function draw_lattice(file, container, wrapper, colors) {
     xmax = lattice[6]
     ymax = lattice[7]
 
-    console.log(colors())
-
     //Draw Edges
     for (let i = 0; i < edges.length; i++) {
         let source = edges[i][0]

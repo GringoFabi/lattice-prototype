@@ -9,6 +9,7 @@ import {bindSelectionUpdates} from '../lattice-library/main.js';
 import Navigation from './navigation/Navigation.jsx';
 import {Popup} from './hover/Popup.jsx';
 import Tools from './tools/Tools.jsx';
+import {Trans} from '@mbarzda/solid-i18next';
 
 const initialColors = {
     'top-half': '#8888ff',
@@ -37,7 +38,8 @@ const App = () => {
             <div className="main">
                 <Show when={file()} fallback={<Dropzone update={setFile}/>}>
                     <button className="reset-button"
-                            onClick={() => setFile(null)}>Reset
+                            onClick={() => setFile(null)}>
+                        <Trans key="reset" />
                     </button>
                     <Lattice file={file()} colors={colors}/>
                 </Show>

@@ -1,8 +1,8 @@
 
 .standard-node {
-    min-width: 73px;
+    min-width: 93px;
     min-height: 82px;
-    max-width: 73px;
+    max-width: 93px;
     max-height: 82px;
 }
 
@@ -10,6 +10,6 @@
 #svg-container {
     min-width: 73px;
     min-height: 82px;
-    max-width: 73px;
+    max-width: 93px;
     max-height: 82px;
 }

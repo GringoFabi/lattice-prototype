@@ -1,6 +1,7 @@
 import {getEntity, HoverState} from '../../node-util/node.jsx';
 import {For, Match, Switch} from 'solid-js';
 import {collectBotLabels, collectTopLabels} from '../../node-util/concepts.js';
+import {Trans} from '@mbarzda/solid-i18next';
 
 
 export const EntityPopup = ({node, state, superConcept, subConcept}) => {
@@ -9,14 +10,14 @@ export const EntityPopup = ({node, state, superConcept, subConcept}) => {
         <hr className="line"/>
         <Switch>
             <Match when={state() === HoverState.Lower}>
-                <span>Has abilities:<br/>
+                <span><Trans key="popup-abilities"/><br/>
                     <For each={collectTopLabels(node(), superConcept())}>{(item) =>
                         <>- {item}<br/></>
                     }</For>
                 </span>
             </Match>
             <Match when={state() === HoverState.Upper}>
-                <span>Shares properties with:<br/>
+                <span><Trans key="popup-properties"/><br/>
                     <For each={collectBotLabels(node(), subConcept(), true)}>{(item) =>
                         <>- {item}<br/></>
                     }</For>

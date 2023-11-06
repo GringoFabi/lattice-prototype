@@ -1,6 +1,7 @@
 import {SVG} from '@svgdotjs/svg.js';
 import {createEffect, createMemo, createRenderEffect, onMount} from 'solid-js';
 import './standard-node.css'
+import {useTransContext} from '@mbarzda/solid-i18next';
 
 const style = getComputedStyle(document.body);
 const textSize = 16;
@@ -9,14 +10,15 @@ const StandardNode = ({colors}) => {
     const svgContainer = createMemo(() => SVG().id('svg-container'), []);
     let svgWrapper;
 
+    const [t, {getI18next}] = useTransContext();
     let topLabel, bottomLabel, valueLabel, topHalf, bottomHalf;
     onMount(() => {
-        topLabel = svgContainer().text(String('Property'))
+        topLabel = svgContainer().text(String(t('property')))
             .attr('name', (style.getPropertyValue('--label-upper-indicator') + 'Property'))
             .move(0, 0)
             .font({fill: colors()['top-label'], size: textSize, family: 'Arial'})
 
-        bottomLabel = svgContainer().text(String('Article'))
+        bottomLabel = svgContainer().text(String(t('article')))
             .attr('name', (style.getPropertyValue('--label-lower-indicator') + 'Article'))
             .move(10, 60)
             .font({fill: colors()['bottom-label'], size: textSize, family: 'Arial'})
@@ -38,6 +40,11 @@ const StandardNode = ({colors}) => {
             .move(10, 40)
             .stroke({color: style.getPropertyValue('--default-black'), width: 3, linecap: 'round', linejoin: 'round'})
             .fill(colors()['bottom-half'])
+    })
+
+    getI18next().on('languageChanged', () => {
+        topLabel.node.textContent = t('property');
+        bottomLabel.node.textContent = t('article');
     })
 
     createEffect(() => svgContainer().addTo(svgWrapper))

@@ -1,10 +1,11 @@
 import {For, Match, Switch} from 'solid-js';
 import {getEntity, getProperty, isAnEntity, isAProperty, isEntityWithProperty} from '../../node-util/node.jsx';
+import {Trans} from '@mbarzda/solid-i18next';
 
 const Selection = ({selection}) => {
     return (<>
         <hr style="width: 100%"></hr>
-        <span>Selected Nodes:&nbsp
+        <span><Trans key="selected-nodes"/>
             <For each={selection()}>{(item, index) =>
                 <>{index() < 1 ? '' : ', '}{item.node}</>
             }</For>

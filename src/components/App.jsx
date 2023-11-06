@@ -34,7 +34,6 @@ const App = () => {
 
     return (
         <>
-            <Tools colors={colors} setColors={setColors}/>
             <div className="main">
                 <Show when={file()} fallback={<Dropzone update={setFile}/>}>
                     <button className="reset-button"
@@ -44,7 +43,7 @@ const App = () => {
                     <Lattice file={file()} colors={colors}/>
                 </Show>
             </div>
-            <Show when={selection().length > 0 && conceptsAreSet()}>
+            <Show when={selection().length > 0 && conceptsAreSet()} fallback={<Tools colors={colors} setColors={setColors}/>}>
                 <Navigation selection={selection} superConcept={superConcept} subConcept={subConcept}/>
             </Show>
             <Legend colors={colors}/>

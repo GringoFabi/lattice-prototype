@@ -2,6 +2,8 @@ import {render} from 'solid-js/web'
 import './index.css'
 import App from './App.jsx'
 import {createSignal} from 'solid-js';
+import {TransProvider} from '@mbarzda/solid-i18next';
+import {resources} from '../i18n/dict.js';
 
 const root = document.getElementById('root')
 
@@ -13,8 +15,10 @@ const handleMouseMove = (event) => {
 }
 
 render(() => (
-    <div onMouseMove={(event) => handleMouseMove(event)}>
-        <App/>
-        <small className="position">[{pos().x}, {pos().y}]</small>
-    </div>
+    <TransProvider options={{resources}} lng="en">
+        <div onMouseMove={(event) => handleMouseMove(event)}>
+            <App/>
+            <small className="position">[{pos().x}, {pos().y}]</small>
+        </div>
+    </TransProvider>
 ), root)

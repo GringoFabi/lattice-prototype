@@ -4,7 +4,7 @@ import {Trans} from '@mbarzda/solid-i18next';
 
 const Selection = ({selection}) => {
     return (<>
-        <hr style="width: 100%"></hr>
+        <hr/>
         <span><Trans key="selected-nodes"/>
             <For each={selection()}>{(item, index) =>
                 <>{index() < 1 ? '' : ', '}{item.node}</>

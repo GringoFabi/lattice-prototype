@@ -1,0 +1,7 @@
+
+.languages {
+    box-shadow: 0 0 0 0;
+    /*transform: scale(1);*/
+    animation: pulse 1s ease-in;
+    z-index: 10;
+}

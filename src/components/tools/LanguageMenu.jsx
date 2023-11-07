@@ -17,7 +17,7 @@ const LanguageMenu = ({hide, setHide}) => {
                 <h3 style="margin: 1px"><Trans key="languages"/></h3>
                 <span className="material-symbols-outlined hide" onClick={() => setHide(!hide())}>hide</span>
             </div>
-            <hr style="width: 100%"></hr>
+            <hr/>
             <div className="controls">
                 <label><Trans key="language-text"/></label>
                 <button className={isActive('en')} onClick={() => changeLanguage('en')}>

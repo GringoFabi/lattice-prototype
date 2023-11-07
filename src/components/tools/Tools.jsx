@@ -1,12 +1,16 @@
-import {createSignal, Match, Show, Switch} from 'solid-js';
-import Overlay from './Overlay.jsx';
+import {createContext, createSignal, Match, Show, Switch} from 'solid-js';
+import Overlay from '../overlay/Overlay.jsx';
 import Settings from './Settings.jsx';
 import LanguageMenu from './LanguageMenu.jsx';
 
+const [hideSettings, setHideSettings] = createSignal(true);
+const [hideLanguage, setHideLanguage] = createSignal(true);
+
+export const LanguageContext = createContext([hideLanguage, setHideLanguage])
+export const SettingsContext = createContext([hideSettings, setHideSettings])
+
 const Tools = ({colors, setColors}) => {
     const [hideOverlay, setHideOverlay] = createSignal(true);
-    const [hideSettings, setHideSettings] = createSignal(true);
-    const [hideLanguage, setHideLanguage] = createSignal(true);
 
     return (
         <>
@@ -21,10 +25,10 @@ const Tools = ({colors, setColors}) => {
                 </div>
             </Show>
 
+            <Show when={!hideOverlay()}>
+                <Overlay state={hideOverlay} update={setHideOverlay}/>
+            </Show>
             <Switch>
-                <Match when={!hideOverlay()}>
-                    <Overlay state={hideOverlay} update={setHideOverlay}/>
-                </Match>
                 <Match when={!hideSettings()}>
                     <Settings hide={hideSettings} setHide={setHideSettings} colors={colors} setColors={setColors}/>
                 </Match>

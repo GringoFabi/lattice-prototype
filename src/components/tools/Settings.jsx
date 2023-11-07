@@ -16,7 +16,7 @@ const Settings = ({hide, setHide, colors, setColors}) => {
                 <h3 style="margin: 1px"><Trans key="settings"/></h3>
                 <span className="material-symbols-outlined hide" onClick={() => setHide(!hide())}>hide</span>
             </div>
-            <hr style="width: 100%"></hr>
+            <hr/>
             <span className="color-picker">
                 <label><Trans key="top-half-color-pick"/></label>
                 <input type="color" id="head" name="head" value={colors()['top-half']}

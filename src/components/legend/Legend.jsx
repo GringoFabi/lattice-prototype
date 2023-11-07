@@ -1,13 +1,15 @@
 import StandardNode from './StandardNode.jsx';
 import './legend.css';
-import {createSignal, Show} from 'solid-js';
+import {createContext, createSignal, Show} from 'solid-js';
 import {Trans} from '@mbarzda/solid-i18next';
 
+const [hide, setHide] = createSignal(true);
+export const LegendContext = createContext([hide, setHide]);
+
 const Legend = ({colors}) => {
-    const [hide, setHide] = createSignal(false);
 
     return (
-        <Show when={hide()} fallback={
+        <Show when={!hide()} fallback={
             <span className="material-symbols-outlined show" onClick={() => setHide(!hide())}>explore</span>
         }>
             <div className="card legend">
@@ -16,7 +18,7 @@ const Legend = ({colors}) => {
                         <h3 style="margin: 1px"><Trans key="legend"/></h3>
                         <span className="material-symbols-outlined hide" onClick={() => setHide(!hide())}>hide</span>
                     </div>
-                    <hr style="width: 100%"></hr>
+                    <hr/>
                     <span style="margin: 0.5em 0.75em"><Trans key="hover-info"/></span>
                     <div className="row-middle">
                         <StandardNode colors={colors}/>

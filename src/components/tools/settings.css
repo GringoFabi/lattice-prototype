@@ -16,7 +16,7 @@
     height: auto;
 }
 
-.color-picker {
+.control-span {
     display: flex;
     flex-direction: row;
     align-items: center;

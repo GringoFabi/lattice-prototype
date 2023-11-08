@@ -69,6 +69,12 @@
     margin-bottom: 1em;
 }
 
+.highlight {
+    box-shadow: 0 0 0 0;
+    animation: pulse 1s ease-in;
+    z-index: 10;
+}
+
 @keyframes pulse {
     0% {
         box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.7);

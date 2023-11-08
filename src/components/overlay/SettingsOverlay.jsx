@@ -1,5 +1,4 @@
 import {Trans} from '@mbarzda/solid-i18next';
-import './settingsOverlay.css';
 
 
 const SettingsOverlay = () => {

@@ -40,7 +40,8 @@ export const resources = {
             'legend-help-0': 'Below you can see the Legend. It describes you what nodes in the lattice look like. Also, it describes how you may want to interact with these nodes, e.g. clicking on either half triggers a different function. Take note that you can also drag nodes around.',
             'legend-help-1': 'Moreover, the clicking functionality may also be accessed through clicking on a label. Clicking on either label results in the respective clicking behavior for both node-halves, accordingly.',
             'language-help': 'In this menu you can change the currently active language. The bright button represents the language that is currently selected. To change it simply click on another one.',
-            'settings-help': 'In this menu, you can change the color of the nodes and their identifiers. To do this, simply click on one of the input fields and then select a color in the dialog.'
+            'settings-help': 'In this menu, you can change the color of the nodes and their identifiers. To do this, simply click on one of the input fields and then select a color in the dialog.',
+            'show-dimensions': 'Enable dimensions display:'
         }
     },
     de: {
@@ -84,7 +85,8 @@ export const resources = {
             'legend-help-0': 'Unten siehst du die Legende. Sie beschreibt, wie die Knoten des Gitters aussehen. Außerdem wird beschrieben, wie du mit den Knoten interagieren kannst, z.B. löst ein Klick auf eine der beiden Hälften eine Funktion aus. Beachte, dass du Knoten auch umherziehen kannst.',
             'legend-help-1': 'Außerdem kann die Klickfunktionalität durch Klicken auf einen Bezeichner aufgerufen werden. Ein Klick auf einen der beiden Bezeichner führt zu dem entsprechenden Klickverhalten für beide Knotenhälften.',
             'language-help': 'In diesem Menü kannst du die derzeit aktive Sprache ändern. Die helle Schaltfläche steht für die Sprache, die gerade ausgewählt ist. Um sie zu ändern, klicke einfach auf eine andere Schaltfläche.',
-            'settings-help': 'In diesem Menü kannst du die Farbe der Knoten und ihrer Bezeichner verändern. Hierfür klicke einfach auf eines der Input-Felder und wähle anschließend eine Farbe im Dialog aus.'
+            'settings-help': 'In diesem Menü kannst du die Farbe der Knoten und ihrer Bezeichner verändern. Hierfür klicke einfach auf eines der Input-Felder und wähle anschließend eine Farbe im Dialog aus.',
+            'show-dimensions': 'Aktiviere Dimension-Anzeige:'
         }
     }
 }

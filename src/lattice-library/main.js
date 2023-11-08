@@ -300,9 +300,11 @@ export function draw_lattice(file, container, wrapper, colors) {
                 })
             })
             .mouseout(function () {
-                updateHoverNode(null)
-                updateHoverSuperConcept(null)
-                updateHoverState('')
+                setTimeout(() => {
+                    updateHoverNode(null)
+                    updateHoverSubConcept(null)
+                    updateHoverState('')
+                }, 300)
             })
     }
 }

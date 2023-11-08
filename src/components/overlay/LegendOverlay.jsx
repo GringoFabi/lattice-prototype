@@ -1,4 +1,3 @@
-import './legendOverlay.css'
 import {Trans} from '@mbarzda/solid-i18next';
 
 const LegendOverlay = () => {

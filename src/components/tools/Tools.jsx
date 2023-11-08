@@ -3,14 +3,16 @@ import Overlay from '../overlay/Overlay.jsx';
 import Settings from './Settings.jsx';
 import LanguageMenu from './LanguageMenu.jsx';
 
+const [hideOverlay, setHideOverlay] = createSignal(true);
 const [hideSettings, setHideSettings] = createSignal(true);
 const [hideLanguage, setHideLanguage] = createSignal(true);
 
+export const OverlayContext = createContext([hideOverlay, setHideOverlay])
 export const LanguageContext = createContext([hideLanguage, setHideLanguage])
 export const SettingsContext = createContext([hideSettings, setHideSettings])
 
 const Tools = ({colors, setColors}) => {
-    const [hideOverlay, setHideOverlay] = createSignal(true);
+
 
     return (
         <>
@@ -26,7 +28,7 @@ const Tools = ({colors, setColors}) => {
             </Show>
 
             <Show when={!hideOverlay()}>
-                <Overlay state={hideOverlay} update={setHideOverlay}/>
+                <Overlay />
             </Show>
             <Switch>
                 <Match when={!hideSettings()}>

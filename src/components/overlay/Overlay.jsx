@@ -4,35 +4,37 @@ import LegendOverlay from './LegendOverlay.jsx';
 import {createSignal, onMount, useContext} from 'solid-js';
 import LanguageOverlay from './LanguageOverlay.jsx';
 import {LegendContext} from '../legend/Legend.jsx';
-import {LanguageContext, SettingsContext} from '../tools/Tools.jsx';
+import {LanguageContext, OverlayContext, SettingsContext} from '../tools/Tools.jsx';
 import SettingsOverlay from './SettingsOverlay.jsx';
 
 
-const Overlay = ({state, update}) => {
+const Overlay = () => {
+    const [state, update] = useContext(OverlayContext);
+
     // store setters in an array for easier access
     const setters = [
         useContext(LegendContext)[1],
         useContext(LanguageContext)[1],
         useContext(SettingsContext)[1]
-    ]
+    ];
 
     const labels = [
         <Trans key="legend"/>,
         <Trans key="languages"/>,
         <Trans key="settings"/>
-    ]
+    ];
 
     const overlays = [
         <LegendOverlay/>,
         <LanguageOverlay/>,
         <SettingsOverlay/>
-    ]
+    ];
 
-    const [next, setNext] = createSignal(0)
+    const [next, setNext] = createSignal(0);
 
     onMount(() => {
         setters[0](false)
-    })
+    });
 
     const switchToNext = () => {
         setters[next()](true)
@@ -69,9 +71,7 @@ const Overlay = ({state, update}) => {
             <button onClick={() => switchToNext()}><Trans key="next"/></button>
             <button onClick={() => leave()}><Trans key="skip"/></button>
         </div>
-
     </>)
-
 }
 
 export default Overlay;

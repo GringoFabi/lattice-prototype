@@ -1,18 +1,21 @@
 import StandardNode from './StandardNode.jsx';
 import './legend.css';
-import {createContext, createSignal, Show} from 'solid-js';
+import {createContext, createSignal, Show, useContext} from 'solid-js';
 import {Trans} from '@mbarzda/solid-i18next';
+import {OverlayContext} from '../tools/Tools.jsx';
 
 const [hide, setHide] = createSignal(true);
 export const LegendContext = createContext([hide, setHide]);
 
 const Legend = ({colors}) => {
+    const [hideOverlay,] = useContext(OverlayContext);
+    const className = () => hideOverlay() ? "card legend" : "card legend highlight";
 
     return (
         <Show when={!hide()} fallback={
             <span className="material-symbols-outlined show" onClick={() => setHide(!hide())}>explore</span>
         }>
-            <div className="card legend">
+            <div className={className()}>
                 <div className="column">
                     <div className="row">
                         <h3 style="margin: 1px"><Trans key="legend"/></h3>

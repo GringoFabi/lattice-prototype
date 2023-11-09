@@ -32,12 +32,23 @@ const App = () => {
     const conceptsAreSet = createMemo(() => superConcept() !== null && subConcept() !== null)
     const [colors, setColors] = createSignal(initialColors)
 
+    const reset = () => {
+        setFile(null);
+        setSelection([]);
+        setSuperConcept(null);
+        setSubConcept(null);
+        setHoverNode(null);
+        setHoverSuperConcept(null);
+        setHoverSubConcept(null);
+        setHoverState('');
+    }
+
     return (
         <>
             <div className="main">
                 <Show when={file()} fallback={<Dropzone update={setFile}/>}>
                     <button className="reset-button"
-                            onClick={() => setFile(null)}>
+                            onClick={() => reset()}>
                         <Trans key="reset" />
                     </button>
                     <Lattice file={file()} colors={colors}/>

@@ -487,7 +487,7 @@ function handle_upwards(node, nodeData) {
         node = nodes_upper[name.replace(style.getPropertyValue('--label-upper-indicator'), '')]
     }
 
-    //Check if Other Half is Alredy Present
+    //Check if Other Half is Already Present
     if (!selection.has(nodes_upper[name])) {
         selection.addToSession(node, nodeData)
     }

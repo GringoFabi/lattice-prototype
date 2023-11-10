@@ -321,6 +321,14 @@ export function updateColors(colors) {
 
 }
 
+export function updateFontSize(value) {
+    for (let i = 0; i < nodes_upper.length; i++) {
+        labels_upper[i].font({size: value})
+        labels_lower[i].font({size: value})
+        valuations_objects[i].font({size: value})
+    }
+}
+
 function readJSON(json) {
     //Read Nodes, Positions and Labels
     for (let i = 0; i < json.nodes.length; i++) {

@@ -1,13 +1,15 @@
 import './settings.css'
 import {Trans} from '@mbarzda/solid-i18next';
-import {createContext, createSignal, useContext} from 'solid-js';
+import {createContext, createRenderEffect, createSignal, useContext} from 'solid-js';
 import {OverlayContext} from './Tools.jsx';
+import {updateFontSize} from '../../lattice-library/main.js';
 
 const [showDimensions, setShowDimensions] = createSignal(false);
 export const DimensionsContext = createContext([showDimensions, setShowDimensions]);
 
 
 const Settings = ({hide, setHide, colors, setColors}) => {
+    const [fontSize, setFontSize] = createSignal(20);
     const [hideOverlay,] = useContext(OverlayContext);
     const className = () => hideOverlay() ? "card column settings" : "card column settings highlight";
 
@@ -16,6 +18,8 @@ const Settings = ({hide, setHide, colors, setColors}) => {
         newColors[label] = value;
         setColors({...newColors});
     }
+
+    createRenderEffect(() => updateFontSize(fontSize()));
 
     return (
         <div className={className()}>
@@ -53,6 +57,11 @@ const Settings = ({hide, setHide, colors, setColors}) => {
                 <label><Trans key="show-dimensions"/></label>
                 <input type="checkbox" value={showDimensions()}
                        onInput={() => setShowDimensions(!showDimensions())}/>
+            </span>
+            <span className="control-span">
+                <label><Trans key="change-font-size"/></label>
+                <input className="number-input" type="number" value={fontSize()} min={1} max={25}
+                       onInput={(e) => setFontSize(e.target.value)}/>
             </span>
         </div>
     )

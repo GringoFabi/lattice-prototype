@@ -9,7 +9,7 @@ const Concept = ({concept, labels, type, name}) => {
             }</For>
         </span>
         <Show when={labels().length > 0}>
-            <span>{name}:&nbsp
+            <span>{name()}
             <For each={labels()}>{(item, index) =>
                 <>{index() < 1 ? '' : ', '}{item}</>
             }</For>

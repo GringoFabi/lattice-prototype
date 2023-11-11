@@ -97,7 +97,7 @@ function init(container, wrapper) {
     });
 
     let {clientWidth, clientHeight} = wrapper;
-    draw.size(clientWidth, clientHeight).viewbox(`-${xmax*50} 10 ${clientWidth + 50} ${clientHeight + 50}`)
+    draw.size(clientWidth, clientHeight).viewbox(`-${xmax * 50} 10 ${clientWidth + 50} ${clientHeight + 50}`)
         .panZoom({
             panning: true,
             wheelZoom: true,
@@ -279,11 +279,9 @@ export function draw_lattice(file, container, wrapper, colors) {
                 })
             })
             .mouseout(function () {
-                setTimeout(() => {
-                    updateHoverNode(null)
-                    updateHoverSubConcept(null)
-                    updateHoverState('')
-                }, 300)
+                updateHoverNode(null)
+                updateHoverSubConcept(null)
+                updateHoverState('')
             })
 
         labels_lower[j]
@@ -300,11 +298,9 @@ export function draw_lattice(file, container, wrapper, colors) {
                 })
             })
             .mouseout(function () {
-                setTimeout(() => {
-                    updateHoverNode(null)
-                    updateHoverSubConcept(null)
-                    updateHoverState('')
-                }, 300)
+                updateHoverNode(null)
+                updateHoverSubConcept(null)
+                updateHoverState('')
             })
     }
 }

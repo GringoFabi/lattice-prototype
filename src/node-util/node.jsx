@@ -20,7 +20,7 @@ export function isEntityWithProperty(node) {
 }
 
 export function getProperty(node) {
-    return (<span><Trans key="property-colum"/>
+    return (<span><Trans key="property-colon"/>
         <For each={node.toplabel}>{(item, index) =>
             <>{index() < 1 ? '' : ', '}{item}</>}
         </For>
@@ -28,7 +28,7 @@ export function getProperty(node) {
 }
 
 export function getEntity(node) {
-    return (<span><Trans key="entity-colum"/>
+    return (<span><Trans key="entity-colon"/>
         <For each={node.botlabel}>{(item, index) =>
             <>{index() < 1 ? '' : ', '}{item}</>}
         </For>

@@ -1,8 +1,34 @@
-import {For, Match, Switch} from 'solid-js';
-import {getEntity, getProperty, isAnEntity, isAProperty, isEntityWithProperty} from '../../node-util/node.jsx';
+import {createMemo, For, Show} from 'solid-js';
+import {isAnEntity, isAProperty, isEntityWithProperty} from '../../node-util/node.jsx';
 import {Trans} from '@mbarzda/solid-i18next';
 
 const Selection = ({selection}) => {
+    const categorize = createMemo(() => {
+        const entities = [], properties = [];
+        selection().forEach(value => {
+            if (isAnEntity(value)) {
+                entities.push(value.botlabel);
+            }
+            if (isAProperty(value)) {
+                properties.push(value.toplabel);
+            }
+            if (isEntityWithProperty(value)) {
+                entities.push(value.botlabel);
+                properties.push(value.toplabel);
+            }
+        })
+
+        return {entities: entities, properties: properties};
+    });
+
+    const entityLabel = createMemo(() => {
+        return categorize().entities.length === 1 ? <Trans key="entity-colon"/> : <Trans key="entities-colon"/>;
+    });
+
+    const propertyLabel = createMemo(() => {
+        return categorize().properties.length === 1 ? <Trans key="property-colon"/> : <Trans key="properties-colon"/>;
+    });
+
     return (<>
         <hr/>
         <span><Trans key="selected-nodes"/>
@@ -10,45 +36,22 @@ const Selection = ({selection}) => {
                 <>{index() < 1 ? '' : ', '}{item.node}</>
             }</For>
         </span>
-        <Switch>
-            <Match when={isAnEntityWithProperty(selection())}>
-                {getEntity(selection()[0])}
-                {getProperty(selection()[0])}
-            </Match>
-            <Match when={isOnlyAProperty(selection())}>
-                {getProperty(selection()[0])}
-            </Match>
-            <Match when={isOnlyAnEntity(selection())}>
-                {getEntity(selection()[0])}
-            </Match>
-        </Switch>
+
+        <Show when={categorize().entities.length !== 0}>
+            <span>{entityLabel()}
+                <For each={categorize().entities}>{(item, index) =>
+                    <>{index() < 1 ? '' : ', '}{item}</>
+                }</For>
+        </span>
+        </Show>
+
+        <Show when={categorize().properties.length !== 0}>
+            <span>{propertyLabel()}
+                <For each={categorize().properties}>{(item, index) =>
+                    <>{index() < 1 ? '' : ', '}{item}</>
+                }</For>
+        </span>
+        </Show>
     </>)
 }
-
-function isAnEntityWithProperty(selection) {
-    if (selection.length > 1) {
-        return false;
-    }
-
-    return isEntityWithProperty(selection[0]);
-}
-
-function isOnlyAProperty(selection) {
-    if (selection.length > 1) {
-        return false;
-    }
-
-    return isAProperty(selection[0]);
-}
-
-function isOnlyAnEntity(selection) {
-    if (selection.length > 1) {
-        return false;
-    }
-
-    return isAnEntity(selection[0]);
-}
-
-
-
 export default Selection

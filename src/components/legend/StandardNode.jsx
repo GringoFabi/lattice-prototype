@@ -18,7 +18,7 @@ const StandardNode = ({colors}) => {
             .move(0, 0)
             .font({fill: colors()['top-label'], size: textSize, family: 'Arial'})
 
-        bottomLabel = svgContainer().text(String(t('article')))
+        bottomLabel = svgContainer().text(String(t('entity')))
             .attr('name', (style.getPropertyValue('--label-lower-indicator') + 'Article'))
             .move(10, 60)
             .font({fill: colors()['bottom-label'], size: textSize, family: 'Arial'})
@@ -44,7 +44,7 @@ const StandardNode = ({colors}) => {
 
     getI18next().on('languageChanged', () => {
         topLabel.node.textContent = t('property');
-        bottomLabel.node.textContent = t('article');
+        bottomLabel.node.textContent = t('entity');
     })
 
     createEffect(() => svgContainer().addTo(svgWrapper))

@@ -34,6 +34,7 @@ let height = 900
 
 //Listener for Deselection
 let draw;
+let currentColors;
 
 //Variables for Node Selection
 let selection = new Set()
@@ -96,7 +97,7 @@ function init(container, wrapper) {
     });
 
     let {clientWidth, clientHeight} = wrapper;
-    draw.size(clientWidth, clientHeight).viewbox(`-100 0 ${clientWidth + 50} ${clientHeight + 50}`)
+    draw.size(clientWidth, clientHeight).viewbox(`-${xmax * 50} 10 ${clientWidth + 50} ${clientHeight + 50}`)
         .panZoom({
             panning: true,
             wheelZoom: true,
@@ -150,9 +151,9 @@ export function load_file(setFile) {
     input.click();
 }
 
-export function draw_lattice(file, container, wrapper) {
-    init(container, wrapper)
+export function draw_lattice(file, container, wrapper, colors) {
     lattice = readJSON(file)
+    init(container, wrapper)
     delete_all()
 
     nodes = lattice[0]
@@ -167,15 +168,13 @@ export function draw_lattice(file, container, wrapper) {
     ymax = lattice[7]
 
     //Draw Edges
-    let buffer = 50
-
     for (let i = 0; i < edges.length; i++) {
         let source = edges[i][0]
         let target = edges[i][1]
 
-        edge_objects[i] = draw.line(positions[source][0] * (width / (2.2 * xmax)) + width / 2, -(positions[source][1] * (height / (1.2 * ymax))) + height - buffer,
-            positions[target][0] * (width / (2.2 * xmax)) + width / 2, -(positions[target][1] * (height / (1.2 * ymax))) + height - buffer)
-            .stroke({width: 4, color: style.getPropertyValue('--default-black')})
+        edge_objects[i] = draw.line(positions[source][0] * (width / (2.2 * xmax)) + width / 2, -(positions[source][1] * (height / (1.2 * ymax))) + height,
+            positions[target][0] * (width / (2.2 * xmax)) + width / 2, -(positions[target][1] * (height / (1.2 * ymax))) + height)
+            .stroke({width: 3, color: style.getPropertyValue('--default-black')})
             .attr('source', source)
             .attr('target', target)
 
@@ -186,9 +185,9 @@ export function draw_lattice(file, container, wrapper) {
         let node = nodeFromLattice(j);
         labels_upper[j] = group.text(String(toplabels[j]))
             .attr('name', (style.getPropertyValue('--label-upper-indicator') + String(j)))
-            .move(positions[j][0] * (width / (2.2 * xmax)) + width / 2 + 20,
-                -(positions[j][1] * (height / (1.2 * ymax))) - 60 - buffer + height)
-            .font({fill: style.getPropertyValue('--intent-color'), size: 20, family: 'Arial'})
+            .move(positions[j][0] * (width / (2.2 * xmax)) + width / 2 - 30,
+                -(positions[j][1] * (height / (1.2 * ymax))) - 50 + height)
+            .font({fill: colors()['top-label'], size: 20, family: 'Arial'})
             .click(function () {
                 handle_downwards(this, node)
                 log(Action.SelectUpperLabel, node)
@@ -196,9 +195,9 @@ export function draw_lattice(file, container, wrapper) {
 
         labels_lower[j] = group.text(String(botlabels[j]))
             .attr('name', (style.getPropertyValue('--label-lower-indicator') + String(j)))
-            .move(positions[j][0] * (width / (2.2 * xmax)) + width / 2 + 20,
-                -(positions[j][1] * (height / (1.2 * ymax))) + 10 - buffer + height + 30)
-            .font({fill: style.getPropertyValue('--extent-color'), size: 20, family: 'Arial'})
+            .move(positions[j][0] * (width / (2.2 * xmax)) + width / 2 - 15,
+                -(positions[j][1] * (height / (1.2 * ymax))) + 30 + height)
+            .font({fill: colors()['bottom-label'], size: 20, family: 'Arial'})
             .click(function () {
                 handle_upwards(this, node)
                 log(Action.SelectLowerLabel, node)
@@ -206,15 +205,15 @@ export function draw_lattice(file, container, wrapper) {
 
         valuations_objects[j] = group.text(String(valuations[j]))
             .move(positions[j][0] * (width / (2.2 * xmax)) + width / 2 + 30,
-                -(positions[j][1] * (height / (1.2 * ymax))) - 20 - buffer + height)
-            .font({fill: style.getPropertyValue('--extent-color'), size: 20, family: 'Arial'})
+                -(positions[j][1] * (height / (1.2 * ymax))) + height - 10)
+            .font({fill: colors()['value-label'], size: 20, family: 'Arial'})
 
         nodes_upper[j] = group.path("M 0 0 L 25 0 A 1 1 0 0 0 -25 0 Z")
             .attr('name', j)
             .attr('drag', 0)
             .move(positions[j][0] * (width / (2.2 * xmax)) + width / 2 - 25
-                , -(positions[j][1] * (height / (1.2 * ymax))) - 25 - buffer + height)
-            .stroke({color: style.getPropertyValue('--default-black'), width: 4, linecap: 'round', linejoin: 'round'})
+                , -(positions[j][1] * (height / (1.2 * ymax))) - 25 + height)
+            .stroke({color: style.getPropertyValue('--default-black'), width: 3, linecap: 'round', linejoin: 'round'})
             .click(function () {
                 handle_downwards(this, node)
                 log(Action.SelectUpperNode, node)
@@ -234,15 +233,15 @@ export function draw_lattice(file, container, wrapper) {
         if (labels_upper[j].text() === "") {
             nodes_upper[j].fill(style.getPropertyValue('--clear'))
         } else {
-            nodes_upper[j].fill(style.getPropertyValue('--intent-faint'))
+            nodes_upper[j].fill(colors()['top-half'])
         }
 
         nodes_lower[j] = group.path("M 0 0 L -25 0 A 1 1 0 0 0 25 0 Z")
             .attr('name', j)
             .attr('drag', 0)
             .move(positions[j][0] * (width / (2.2 * xmax)) + width / 2 - 25
-                , -(positions[j][1] * (height / (1.2 * ymax))) - buffer + height)
-            .stroke({color: style.getPropertyValue('--default-black'), width: 4, linecap: 'round', linejoin: 'round'})
+                , -(positions[j][1] * (height / (1.2 * ymax))) + height)
+            .stroke({color: style.getPropertyValue('--default-black'), width: 3, linecap: 'round', linejoin: 'round'})
             .click(function () {
                 handle_upwards(this, node)
                 log(Action.SelectLowerNode, node)
@@ -262,7 +261,7 @@ export function draw_lattice(file, container, wrapper) {
         if (labels_lower[j].text() === "") {
             nodes_lower[j].fill(style.getPropertyValue('--clear'))
         } else {
-            nodes_lower[j].fill(style.getPropertyValue('--extent-faint'))
+            nodes_lower[j].fill(colors()['bottom-half'])
         }
 
         // label hover functionality
@@ -300,9 +299,29 @@ export function draw_lattice(file, container, wrapper) {
             })
             .mouseout(function () {
                 updateHoverNode(null)
-                updateHoverSuperConcept(null)
+                updateHoverSubConcept(null)
                 updateHoverState('')
             })
+    }
+}
+
+export function updateColors(colors) {
+    currentColors = colors;
+    for (let i = 0; i < nodes_upper.length; i++) {
+        labels_upper[i].font({weight: 'regular', fill: colors['top-label']})
+        labels_lower[i].font({weight: 'regular', fill: colors['bottom-label']})
+        valuations_objects[i].font({weight: 'regular', fill: colors['value-label']})
+        if (labels_upper[i].text() !== "") nodes_upper[i].fill(colors['top-half'])
+        if (labels_lower[i].text() !== "") nodes_lower[i].fill(colors['bottom-half'])
+    }
+
+}
+
+export function updateFontSize(value) {
+    for (let i = 0; i < nodes_upper.length; i++) {
+        labels_upper[i].font({size: value})
+        labels_lower[i].font({size: value})
+        valuations_objects[i].font({size: value})
     }
 }
 
@@ -437,9 +456,9 @@ function redrawNode(current_node, dragged_node, cursorX, cursorY, bounds, select
     nodes_upper[name].move(posX, posY - 25)
     nodes_lower[name].move(posX, posY)
 
-    labels_upper[name].move(posX + 43, posY - 50)
-    labels_lower[name].move(posX + 43, posY + 20)
-    valuations_objects[name].move(posX + 53, posY - 15)
+    labels_upper[name].move(posX, posY - 55)
+    labels_lower[name].move(posX, posY + 30)
+    valuations_objects[name].move(posX + 55, posY - 10)
 
     //Readraw Affected Edges
     selected_edges.forEach(element => {
@@ -472,7 +491,7 @@ function handle_upwards(node, nodeData) {
         node = nodes_upper[name.replace(style.getPropertyValue('--label-upper-indicator'), '')]
     }
 
-    //Check if Other Half is Alredy Present
+    //Check if Other Half is Already Present
     if (!selection.has(nodes_upper[name])) {
         selection.addToSession(node, nodeData)
     }
@@ -503,7 +522,7 @@ function handle_downwards(node, nodeData) {
         node = nodes_upper[name.replace(style.getPropertyValue('--label-upper-indicator'), '')]
     }
 
-    //Check if Other Half is Alredy Present
+    //Check if Other Half is Already Present
     if (!selection.has(nodes_lower[name])) {
         selection.addToSession(node, nodeData)
     }
@@ -520,9 +539,9 @@ function mark_upper(node) {
 
     let name = node.attr("name")
     if (nodes_upper[name].attr('fill') === style.getPropertyValue('--greyed-out')) {
-        nodes_upper[name].fill(style.getPropertyValue('--intent-color'))
+        nodes_upper[name].fill(currentColors['top-half'])
     }
-    labels_upper[name].font({weight: 'bold', fill: style.getPropertyValue('--intent-color')})
+    labels_upper[name].font({weight: 'bold', fill: currentColors['top-label']})
     nodes_lower[name].stroke({color: style.getPropertyValue('--default-black')})
     nodes_upper[name].stroke({color: style.getPropertyValue('--default-black')})
 
@@ -537,12 +556,12 @@ function mark_upper(node) {
 
             if (super_concepts.has(String(edges[i][0])) && edge_objects[i].stroke() === style.getPropertyValue('--greyed-out')) {
 
-                edge_objects[i].stroke({color: style.getPropertyValue('--intent-color'), width: 5})
+                edge_objects[i].stroke({color: currentColors['top-label'], width: 4})
                 changed = true
                 super_concepts.add(edges[i][1])
                 nodes_lower[edges[i][1]].stroke({color: style.getPropertyValue('--default-black')})
                 nodes_upper[edges[i][1]].stroke({color: style.getPropertyValue('--default-black')})
-                labels_upper[edges[i][1]].font({weight: 'bold', fill: style.getPropertyValue('--intent-color')})
+                labels_upper[edges[i][1]].font({weight: 'bold', fill: currentColors['top-label']})
 
                 if (nodes_upper[edges[i][1]].attr('fill') === style.getPropertyValue('--greyed-out')) {
                     nodes_upper[edges[i][1]].fill(style.getPropertyValue('--intent-color'))
@@ -558,9 +577,9 @@ function mark_lower(node) {
 
     let name = node.attr("name")
     if (nodes_lower[name].attr('fill') === style.getPropertyValue('--greyed-out')) {
-        nodes_lower[name].fill(style.getPropertyValue('--extent-color'))
+        nodes_lower[name].fill(currentColors['bottom-half'])
     }
-    labels_lower[name].font({weight: 'bold', fill: style.getPropertyValue('--extent-color')})
+    labels_lower[name].font({weight: 'bold', fill: currentColors['bottom-label']})
     nodes_lower[name].stroke({color: style.getPropertyValue('--default-black')})
     nodes_upper[name].stroke({color: style.getPropertyValue('--default-black')})
 
@@ -575,12 +594,12 @@ function mark_lower(node) {
 
             if (sub_concepts.has(String(edges[i][1])) && edge_objects[i].stroke() === style.getPropertyValue('--greyed-out')) {
 
-                edge_objects[i].stroke({color: style.getPropertyValue('--extent-color'), width: 5})
+                edge_objects[i].stroke({color: currentColors['bottom-label'], width: 4})
                 changed = true
                 sub_concepts.add(edges[i][0])
                 nodes_lower[edges[i][0]].stroke({color: style.getPropertyValue('--default-black')})
                 nodes_upper[edges[i][0]].stroke({color: style.getPropertyValue('--default-black')})
-                labels_lower[edges[i][1]].font({weight: 'bold', fill: style.getPropertyValue('--extent-color')})
+                labels_lower[edges[i][1]].font({weight: 'bold', fill: currentColors['bottom-label']})
 
                 if (nodes_lower[edges[i][1]].attr('fill') === style.getPropertyValue('--greyed-out')) {
                     nodes_lower[edges[i][1]].fill(style.getPropertyValue('--extent-color'))
@@ -717,8 +736,8 @@ function reset_marking() {
     for (let i = 0; i < nodes_upper.length; i++) {
         nodes_upper[i].stroke({color: style.getPropertyValue('--default-black')})
         nodes_lower[i].stroke({color: style.getPropertyValue('--default-black')})
-        labels_upper[i].font({weight: 'regular', fill: style.getPropertyValue('--intent-color')})
-        labels_lower[i].font({weight: 'regular', fill: style.getPropertyValue('--extent-color')})
+        labels_upper[i].font({weight: 'regular', fill: currentColors['top-label']})
+        labels_lower[i].font({weight: 'regular', fill: currentColors['bottom-label']})
         if (nodes_upper[i].attr('fill') === style.getPropertyValue('--intent-color') ||
             nodes_upper[i].attr('fill') === style.getPropertyValue('--greyed-out')) {
             nodes_upper[i].fill(style.getPropertyValue('--intent-faint'))
@@ -747,10 +766,10 @@ function highlight_selection(selection) {
         nodes_lower[name].stroke({color: style.getPropertyValue('--highlight-color')})
 
         if (selection_type === style.getPropertyValue('--attribute')) {
-            labels_upper[name].font({weight: 'bold', fill: style.getPropertyValue('--intent-color')})
+            labels_upper[name].font({weight: 'bold', fill: currentColors['top-label']})
         }
         if (selection_type === style.getPropertyValue('--object')) {
-            labels_lower[name].font({weight: 'bold', fill: style.getPropertyValue('--extent-color')})
+            labels_lower[name].font({weight: 'bold', fill: currentColors['bottom-label']})
         }
     })
 

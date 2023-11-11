@@ -1,5 +1,5 @@
-import graph from '../assets/graph.svg';
 import {load_file} from '../lattice-library/main.js';
+import {Trans} from '@mbarzda/solid-i18next';
 
 
 const Dropzone = ({update}) => {
@@ -7,9 +7,11 @@ const Dropzone = ({update}) => {
         <div className="drop-zone"
              onDrop={(event) => dropHandler(event, update)}
              onDragOver={(event) => dragOver(event)}>
-            <p className="upload-prompt">Drag and drop a json file or click&nbsp
-                <span className="upload" onClick={(event) => startUpload(event, update)}>here</span>
-                , to start the upload.
+            <p className="upload-prompt"><Trans key="drag-and-drop-intro"/>
+                <span className="upload" onClick={(event) => startUpload(event, update)}>
+                    <Trans key="here"/>
+                </span>
+                <Trans key="drag-and-drop-outro"/>
             </p>
         </div>
     )

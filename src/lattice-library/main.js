@@ -203,10 +203,13 @@ export function draw_lattice(file, container, wrapper, colors) {
                 log(Action.SelectLowerLabel, node)
             })
 
-        valuations_objects[j] = group.text(String(valuations[j]))
-            .move(positions[j][0] * (width / (2.2 * xmax)) + width / 2 + 30,
-                -(positions[j][1] * (height / (1.2 * ymax))) + height - 10)
-            .font({fill: colors()['value-label'], size: 20, family: 'Arial'})
+        debugger
+        if (valuations[j]) {
+            valuations_objects[j] = group.text(String(valuations[j]))
+                .move(positions[j][0] * (width / (2.2 * xmax)) + width / 2 + 30,
+                    -(positions[j][1] * (height / (1.2 * ymax))) + height - 10)
+                .font({fill: colors()['value-label'], size: 20, family: 'Arial'})
+        }
 
         nodes_upper[j] = group.path("M 0 0 L 25 0 A 1 1 0 0 0 -25 0 Z")
             .attr('name', j)
@@ -333,7 +336,16 @@ function readJSON(json) {
         positions[i] = json.positions[i][i]
         toplabels[i] = Object.entries(json['shorthand-annotation'][i])[0][1][0]
         botlabels[i] = Object.entries(json['shorthand-annotation'][i])[0][1][1]
-        valuations[i] = json.valuations[i][i]
+
+        debugger
+        // when encountering an undefined value it jumps here once...
+        let valuationElement = json.valuations[i][i];
+        if (valuationElement) {
+            valuations[i] = valuationElement
+        } else {
+            debugger
+            valuations[i] = false
+        }
 
         if (json.positions[i][i][0] > xmax) {
             xmax = json.positions[i][i][0]

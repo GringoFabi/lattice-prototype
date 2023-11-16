@@ -97,7 +97,7 @@ function init(container, wrapper) {
     });
 
     let {clientWidth, clientHeight} = wrapper;
-    draw.size(clientWidth, clientHeight).viewbox(`-${xmax * 50} 10 ${clientWidth + 50} ${clientHeight + 50}`)
+    draw.size(clientWidth, clientHeight).viewbox(`-${xmax * 50} 10 -${clientWidth - 50} ${clientHeight + 50}`)
         .panZoom({
             panning: true,
             wheelZoom: true,
@@ -203,7 +203,7 @@ export function draw_lattice(file, container, wrapper, colors) {
                 log(Action.SelectLowerLabel, node)
             })
 
-        debugger
+        // some valuation labels might be unset, this `if` prevents an undefined value to be built
         if (valuations[j]) {
             valuations_objects[j] = group.text(String(valuations[j]))
                 .move(positions[j][0] * (width / (2.2 * xmax)) + width / 2 + 30,
@@ -313,7 +313,7 @@ export function updateColors(colors) {
     for (let i = 0; i < nodes_upper.length; i++) {
         labels_upper[i].font({weight: 'regular', fill: colors['top-label']})
         labels_lower[i].font({weight: 'regular', fill: colors['bottom-label']})
-        valuations_objects[i].font({weight: 'regular', fill: colors['value-label']})
+        if (valuations_objects[i]) valuations_objects[i].font({weight: 'regular', fill: colors['value-label']})
         if (labels_upper[i].text() !== "") nodes_upper[i].fill(colors['top-half'])
         if (labels_lower[i].text() !== "") nodes_lower[i].fill(colors['bottom-half'])
     }
@@ -336,16 +336,7 @@ function readJSON(json) {
         positions[i] = json.positions[i][i]
         toplabels[i] = Object.entries(json['shorthand-annotation'][i])[0][1][0]
         botlabels[i] = Object.entries(json['shorthand-annotation'][i])[0][1][1]
-
-        debugger
-        // when encountering an undefined value it jumps here once...
-        let valuationElement = json.valuations[i][i];
-        if (valuationElement) {
-            valuations[i] = valuationElement
-        } else {
-            debugger
-            valuations[i] = false
-        }
+        valuations[i] = json.valuations[i][i]
 
         if (json.positions[i][i][0] > xmax) {
             xmax = json.positions[i][i][0]

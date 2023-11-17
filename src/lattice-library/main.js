@@ -154,7 +154,6 @@ export function load_file(setFile) {
 export function draw_lattice(file, container, wrapper, colors) {
     lattice = readJSON(file)
     init(container, wrapper)
-    delete_all()
 
     nodes = lattice[0]
     positions = lattice[1]
@@ -324,8 +323,32 @@ export function updateFontSize(value) {
     for (let i = 0; i < nodes_upper.length; i++) {
         labels_upper[i].font({size: value})
         labels_lower[i].font({size: value})
-        valuations_objects[i].font({size: value})
+        if (valuations_objects[i]) valuations_objects[i].font({size: value})
     }
+}
+
+export function resetLattice() {
+    delete_all();
+    xmax = 0;
+    ymax = 0;
+    selection_type = '';
+    selection = new Set();
+    selected_edges = new Set();
+    bounds = {};
+    lattice = [];
+    nodes = [];
+    positions = [];
+    edges = [];
+    toplabels = [];
+    botlabels = [];
+    selectionData = [];
+    edge_objects = [];
+    nodes_upper = [];
+    nodes_lower = [];
+    labels_upper = [];
+    labels_lower = [];
+    valuations = [];
+    valuations_objects = [];
 }
 
 function readJSON(json) {
@@ -461,9 +484,9 @@ function redrawNode(current_node, dragged_node, cursorX, cursorY, bounds, select
 
     labels_upper[name].move(posX, posY - 55)
     labels_lower[name].move(posX, posY + 30)
-    valuations_objects[name].move(posX + 55, posY - 10)
+    if (valuations_objects[name]) valuations_objects[name].move(posX + 55, posY - 10)
 
-    //Readraw Affected Edges
+    // Redraw Affected Edges
     selected_edges.forEach(element => {
 
         if (element.attr('source') === name) {

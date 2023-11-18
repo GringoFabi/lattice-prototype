@@ -178,14 +178,22 @@ export function draw_lattice(file, container, wrapper, colors) {
             .attr('target', target)
 
     }
+
+    let xPosMax = 0;
+    let yPosMax = 0;
+
     //Draw Nodes and Labels
     for (let j = 0; j < nodes.length; j++) {
         let group = draw.group();
         let node = nodeFromLattice(j);
+        let nodeXPosition = positions[j][0] * (width / (2.2 * xmax)) + width / 2;
+        let nodeYPosition = -(positions[j][1] * (height / (1.2 * ymax))) + height;
+        if (nodeXPosition > xPosMax) xPosMax = nodeXPosition;
+        if (nodeYPosition > yPosMax) yPosMax = nodeYPosition;
+
         labels_upper[j] = group.text(String(toplabels[j]))
             .attr('name', (style.getPropertyValue('--label-upper-indicator') + String(j)))
-            .move(positions[j][0] * (width / (2.2 * xmax)) + width / 2 - 30,
-                -(positions[j][1] * (height / (1.2 * ymax))) - 50 + height)
+            .move(nodeXPosition - 30, nodeYPosition - 50 )
             .font({fill: colors()['top-label'], size: 20, family: 'Arial'})
             .click(function () {
                 handle_downwards(this, node)
@@ -194,8 +202,7 @@ export function draw_lattice(file, container, wrapper, colors) {
 
         labels_lower[j] = group.text(String(botlabels[j]))
             .attr('name', (style.getPropertyValue('--label-lower-indicator') + String(j)))
-            .move(positions[j][0] * (width / (2.2 * xmax)) + width / 2 - 15,
-                -(positions[j][1] * (height / (1.2 * ymax))) + 30 + height)
+            .move(nodeXPosition - 15, nodeYPosition + 30)
             .font({fill: colors()['bottom-label'], size: 20, family: 'Arial'})
             .click(function () {
                 handle_upwards(this, node)
@@ -205,16 +212,14 @@ export function draw_lattice(file, container, wrapper, colors) {
         // some valuation labels might be unset, this `if` prevents an undefined value to be built
         if (valuations[j]) {
             valuations_objects[j] = group.text(String(valuations[j]))
-                .move(positions[j][0] * (width / (2.2 * xmax)) + width / 2 + 30,
-                    -(positions[j][1] * (height / (1.2 * ymax))) + height - 10)
+                .move(nodeXPosition + 30, nodeYPosition - 10)
                 .font({fill: colors()['value-label'], size: 20, family: 'Arial'})
         }
 
         nodes_upper[j] = group.path("M 0 0 L 25 0 A 1 1 0 0 0 -25 0 Z")
             .attr('name', j)
             .attr('drag', 0)
-            .move(positions[j][0] * (width / (2.2 * xmax)) + width / 2 - 25
-                , -(positions[j][1] * (height / (1.2 * ymax))) - 25 + height)
+            .move(nodeXPosition - 25, nodeYPosition - 25)
             .stroke({color: style.getPropertyValue('--default-black'), width: 3, linecap: 'round', linejoin: 'round'})
             .click(function () {
                 handle_downwards(this, node)
@@ -241,8 +246,7 @@ export function draw_lattice(file, container, wrapper, colors) {
         nodes_lower[j] = group.path("M 0 0 L -25 0 A 1 1 0 0 0 25 0 Z")
             .attr('name', j)
             .attr('drag', 0)
-            .move(positions[j][0] * (width / (2.2 * xmax)) + width / 2 - 25
-                , -(positions[j][1] * (height / (1.2 * ymax))) + height)
+            .move(nodeXPosition - 25, nodeYPosition)
             .stroke({color: style.getPropertyValue('--default-black'), width: 3, linecap: 'round', linejoin: 'round'})
             .click(function () {
                 handle_upwards(this, node)
@@ -305,6 +309,10 @@ export function draw_lattice(file, container, wrapper, colors) {
                 updateHoverState('')
             })
     }
+
+    // center the drawing container
+    draw.size(xPosMax + 50, yPosMax + 50)
+        .viewbox({x: 0, y: 0, width: xPosMax + 50, height: yPosMax + 50});
 }
 
 export function updateColors(colors) {

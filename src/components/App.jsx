@@ -5,7 +5,7 @@ import Footer from './Footer.jsx';
 import Lattice from './Lattice.jsx';
 import Legend from './legend/Legend.jsx';
 import {Environment} from '../env/environment.js';
-import {bindSelectionUpdates} from '../lattice-library/main.js';
+import {bindSelectionUpdates, resetLattice} from '../lattice-library/main.js';
 import Navigation from './navigation/Navigation.jsx';
 import {Popup} from './hover/Popup.jsx';
 import Tools from './tools/Tools.jsx';
@@ -41,6 +41,7 @@ const App = () => {
         setHoverSuperConcept(null);
         setHoverSubConcept(null);
         setHoverState('');
+        resetLattice();
     }
 
     return (

@@ -4,8 +4,9 @@ import {createContext, createRenderEffect, createSignal, useContext} from 'solid
 import {OverlayContext} from './Tools.jsx';
 import {updateFontSize} from '../../lattice-library/main.js';
 
-const [showDimensions, setShowDimensions] = createSignal(false);
-export const DimensionsContext = createContext([showDimensions, setShowDimensions]);
+const [showCoordinates, setShowCoordinates] = createSignal(false);
+
+export const CoordinatesContext = createContext([showCoordinates, setShowCoordinates]);
 
 
 const Settings = ({hide, setHide, colors, setColors}) => {
@@ -54,9 +55,9 @@ const Settings = ({hide, setHide, colors, setColors}) => {
                        onInput={(e) => updateColors('value-label', e.target.value)}/>
             </span>
             <span className="control-span">
-                <label><Trans key="show-dimensions"/></label>
-                <input type="checkbox" value={showDimensions()}
-                       onInput={() => setShowDimensions(!showDimensions())}/>
+                <label><Trans key="show-coordinates"/></label>
+                <input type="checkbox" value={showCoordinates()} checked={showCoordinates()}
+                       onInput={() => setShowCoordinates(!showCoordinates())}/>
             </span>
             <span className="control-span">
                 <label><Trans key="change-font-size"/></label>

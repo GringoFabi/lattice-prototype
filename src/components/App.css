@@ -67,6 +67,8 @@
 }
 
 .tools {
+    display: flex;
+    flex-direction: row;
     position: absolute;
     right: .5em;
     top: .5em;
@@ -75,8 +77,4 @@
 
 .tools > *:not(:last-child) {
     margin-right: .5em;
-}
-
-.material-symbols-outlined {
-    cursor: pointer;
 }

@@ -13,7 +13,10 @@ const Legend = ({colors}) => {
 
     return (
         <Show when={!hide()} fallback={
-            <span className="material-symbols-outlined show" onClick={() => setHide(!hide())}>explore</span>
+            <div className="icon-box legend-box">
+                <span className="material-symbols-outlined show icon" onClick={() => setHide(!hide())}>explore</span>
+                <label><Trans key="legend"/></label>
+            </div>
         }>
             <div className={className()}>
                 <div className="column">

@@ -138,3 +138,23 @@ svg path {
 hr {
   width: 100%;
 }
+
+.icon {
+  font-size: 2em;
+  cursor: pointer;
+}
+
+.icon-box:hover {
+  color: #646cff;
+  transition: color 0.25s ease;
+}
+
+.icon-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.icon-box > label {
+  font-size: 12px;
+}

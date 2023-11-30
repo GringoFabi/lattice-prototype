@@ -2,8 +2,9 @@ import {createContext, createSignal, Match, Show, Switch} from 'solid-js';
 import Overlay from '../overlay/Overlay.jsx';
 import Settings from './Settings.jsx';
 import LanguageMenu from './LanguageMenu.jsx';
+import {Trans} from "@mbarzda/solid-i18next";
 
-const [hideOverlay, setHideOverlay] = createSignal(true);
+const [hideOverlay, setHideOverlay] = createSignal(false);
 const [hideSettings, setHideSettings] = createSignal(true);
 const [hideLanguage, setHideLanguage] = createSignal(true);
 
@@ -18,12 +19,21 @@ const Tools = ({colors, setColors}) => {
         <>
             <Show when={hideSettings() && hideOverlay() && hideLanguage()}>
                 <div className="tools">
-                    <span className="material-symbols-outlined help"
-                          onClick={() => setHideOverlay(!hideOverlay())}>help</span>
-                    <span className="material-symbols-outlined"
-                          onClick={() => setHideLanguage(!hideLanguage())}>language</span>
-                    <span className="material-symbols-outlined"
-                          onClick={() => setHideSettings(!hideSettings())}>settings</span>
+                    <div className="icon-box">
+                        <span className="material-symbols-outlined icon"
+                              onClick={() => setHideOverlay(!hideOverlay())}>help</span>
+                        <label><Trans key="help"/></label>
+                    </div>
+                    <div className="icon-box">
+                        <span className="material-symbols-outlined icon"
+                              onClick={() => setHideLanguage(!hideLanguage())}>language</span>
+                        <label><Trans key="languages"/></label>
+                    </div>
+                    <div className="icon-box">
+                        <span className="material-symbols-outlined icon"
+                              onClick={() => setHideSettings(!hideSettings())}>settings</span>
+                        <label><Trans key="settings"/></label>
+                    </div>
                 </div>
             </Show>
 

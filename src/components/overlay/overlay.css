@@ -31,6 +31,17 @@
     padding: 1em 2em 2em 2em;
 }
 
+.overlay-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.help-image {
+    margin-top: .5em;
+    border-radius: 8px;
+}
+
 .close {
     cursor: pointer;
     position: absolute;

@@ -509,6 +509,8 @@ function redrawNode(current_node, dragged_node, cursorX, cursorY, bounds, select
 }
 
 function handle_upwards(node, nodeData) {
+    if (!node) return
+
     reset_marking()
     if (selection_type === style.getPropertyValue('--attribute')) {
         reset_selection()
@@ -539,6 +541,8 @@ function handle_upwards(node, nodeData) {
 }
 
 function handle_downwards(node, nodeData) {
+    if (!node) return
+
     reset_marking()
     if (selection_type === style.getPropertyValue('--object')) {
         reset_selection()

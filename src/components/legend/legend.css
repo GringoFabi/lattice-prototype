@@ -17,9 +17,8 @@
     cursor: pointer;
 }
 
-.show {
+.legend-box {
     position: absolute;
-    cursor: pointer;
     bottom: .5em;
     right: .5em;
 }
